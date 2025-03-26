@@ -1,0 +1,61 @@
+C51 COMPILER V9.60.7.0   SEG                                                               03/26/2025 22:07:10 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SEG
+OBJECT MODULE PLACED IN .\Objects\Seg.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\Driver\Src\Seg.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\
+                    -Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Seg.lst) OBJECT(.\Objects\Seg.obj)
+
+line level    source
+
+   1          #include "Seg.h"
+   2          //共阳极数码管 给低电平对应位置亮
+   3          uint8_t code Seg_Table[12] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0xff,0xbf};//断选表
+   4          //0~9:数字0~9 10:不显示 11:-
+   5          uint8_t code Seg_Pos[8] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};//位选表
+   6          
+   7          /**
+   8           * @brief 在对应的位置的数码管显示对应的数字或者字母
+   9           * 
+  10           * @param pos 数码管的位置0——7
+  11           * @param num 要显示的内容，具体参考Seg_Table数组中的数据
+  12           * @param point 是否显示小数点
+  13           */
+  14          void Seg_Disp(uint8_t pos,uint8_t num,bit point)
+  15          {
+  16   1          //动态数码管先消影
+  17   1          P0 = 0xff;
+  18   1          P2 = P2 & 0x1f | 0xe0;
+  19   1          P2 &= 0x1f;
+  20   1      
+  21   1          //先位选
+  22   1          P0 = Seg_Pos[pos];
+  23   1          P2 = P2 & 0x1f | 0xc0;
+  24   1          P2 &= 0x1f;
+  25   1      
+  26   1          //后断选
+  27   1          if(point)
+  28   1          {
+  29   2              P0 = Seg_Table[num] & 0x7f;//有小数点则给对应断选位置的最高位置0
+  30   2          }
+  31   1          else
+  32   1          {
+  33   2              P0 = Seg_Table[num];
+  34   2          }
+  35   1          P2 = P2 & 0x1f | 0xe0;
+  36   1          P2 &= 0x1f;
+  37   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     60    ----
+   CONSTANT SIZE    =     20    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

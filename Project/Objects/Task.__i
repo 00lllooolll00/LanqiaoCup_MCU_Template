@@ -1,0 +1,1 @@
+"..\User\Src\Task.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Task.lst) OBJECT(.\Objects\Task.obj)

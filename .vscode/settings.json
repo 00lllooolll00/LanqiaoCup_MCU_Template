@@ -1,0 +1,14 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "tim0.h": "c",
+        "main.h": "c",
+        "tim.h": "c",
+        "task.h": "c",
+        "periph.h": "c",
+        "string.h": "c",
+        "iic.h": "c",
+        "ultrasonic.h": "c",
+        "serial.h": "c"
+    }
+}

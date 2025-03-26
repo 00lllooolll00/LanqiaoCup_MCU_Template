@@ -1,0 +1,277 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\User\Src\main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\I
+                    -nc) DEBUG OBJECTEXTEND PRINT(.\Listings\main.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /**
+   2           * @file main.c
+   3           * @author 九千九百九十九
+   4           * @brief  基于西风团队的模板，加上自己写的调度器，囊括了蓝桥杯单片机的所�
+             -�外设，并且为每一种外设都提供了对应的例子和注释。
+   5           * @version 0.1
+   6           * @date 2025-03-26
+   7           * 
+   8           * @copyright Copyright (c) 2025
+   9           * 
+  10           */
+  11          /*HEADER*/
+  12          #include "main.h"
+  13          #include "Task.h"
+  14          #include "SysInit.h"
+  15          #include "TIM.h"
+  16          #include "LED.h"
+  17          #include "Seg.h"
+  18          #include "Key.h"
+  19          #include "Delay.h"
+  20          #include "Periph.h"
+  21          #include "iic.h"
+  22          #include "onewire.h"
+  23          #include "ds1302.h"
+  24          #include "Ultrasonic.h"
+  25          #include "Serial.h"
+  26          
+  27          /*Global Variable*/
+  28          uint32_t xdata Mysystick = 0;//系统心跳
+  29          uint8_t pdata Seg_Buf[8];//数码管显示缓存
+  30          uint8_t pdata Seg_Point[8];//数码管小数点显示缓存
+  31          uint8_t pdata ucLed[8];//LED灯显示缓存
+  32          uint8_t pdata ucRTC[3]={23,59,50};//时间储存 时、分、秒
+  33          float temprature;//温度
+  34          uint8_t RxData[5];//串口接收到的的数据
+  35          uint8_t Serial_Idle_Cnt;//串口空闲计时器
+  36          uint8_t index;//指示当前接收到数据的索引
+  37          uint8_t Adval1;//AD转换值
+  38          uint8_t Adval2;//AD转换值
+  39          
+  40          /*Task1 Creation Key*/
+  41          void Task_Key(void)
+  42          {
+  43   1          static uint8_t Key_Val;
+  44   1          static uint8_t Key_Down;
+  45   1          static uint8_t Key_Up;
+  46   1          static uint8_t Key_Old = 0;//该值初始给0 避免警告
+  47   1      
+  48   1          Key_Val = Key_Read();
+  49   1          Key_Down = Key_Val & (Key_Val ^ Key_Old);
+  50   1          Key_Up = ~Key_Val & (Key_Val ^ Key_Old);
+  51   1          Key_Old = Key_Val;
+  52   1      
+  53   1          /*Test*/
+C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 2   
+
+  54   1          if(Key_Down == 4)
+  55   1          {
+  56   2              static bit Test_Flag = 0;
+  57   2              Test_Flag ^= 1;
+  58   2              memset(ucLed,Test_Flag,8);
+  59   2              memset(Seg_Point,Test_Flag,8);
+  60   2          }
+  61   1      
+  62   1      }
+  63          
+  64          /*Task2 Creation Seg Led*/
+  65          void Task_Disp(void)
+  66          {
+  67   1          uint8_t Scan = Mysystick % 8;//显示扫描变量 只在0——7周期变
+  68   1      
+  69   1          Seg_Disp(Scan,Seg_Buf[Scan],Seg_Point[Scan]);//数码管显示
+  70   1          LED_Disp(Scan,ucLed[Scan]);//LED显示
+  71   1      }
+  72          
+  73          /*Task3 Creation NE555*/
+  74          void Task_NE555(void)
+  75          {
+  76   1          static uint16_t Freq = 0;//NE555频率
+  77   1      
+  78   1          //显示数据
+  79   1          //为避免第一次测量时没数据，先初始化为0，先显示第一次再开始测量
+  80   1              Seg_Buf[0] = Freq / 10000 % 10;
+  81   1              Seg_Buf[1] = Freq / 1000 % 10;
+  82   1              Seg_Buf[2] = Freq / 100 % 10;
+  83   1              Seg_Buf[3] = Freq / 10 % 10;
+  84   1              Seg_Buf[4] = Freq % 10;
+  85   1          
+  86   1          TR0 = 0;//关闭TIM0计数
+  87   1          ET1 = 0;//关闭TIM1中断允许
+  88   1          Freq = TH0 << 8 | TL0;//获取频率
+  89   1          TH0 = TL0 = 0;//手动清空计数值
+  90   1          ET1 = 1;//打开TIM1中断允许
+  91   1          TR0 = 1;//开启TIM0计数
+  92   1      
+  93   1      }
+  94          
+  95          /*Task4 Creation Buzz Motor Relay*/
+  96          void Task_Periph(void)
+  97          {
+  98   1          static bit Flag_Buzz = 0;
+  99   1          static bit Flag_Relay = 1;
+ 100   1      
+ 101   1          Periph_Set(BUZZ,Flag_Buzz);
+ 102   1          Periph_Set(RELAY,Flag_Relay);
+ 103   1      
+ 104   1          //500ms翻转一次继电器和蜂鸣器的电平
+ 105   1          Flag_Buzz ^= 1;
+ 106   1          Flag_Relay ^= 1;
+ 107   1      }
+ 108          
+ 109          /*Task5 Creation DS1302*/
+ 110          void Task_RTC(void)
+ 111          {
+ 112   1          uint8_t i;
+ 113   1              RTC_Read(ucRTC);
+ 114   1              Seg_Buf[2] = Seg_Buf[5] = 11;
+ 115   1          for(i = 0;i < 3; i++)
+C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 3   
+
+ 116   1          {
+ 117   2              Seg_Buf[i * 3] = ucRTC[i] / 10;
+ 118   2              Seg_Buf[i * 3 + 1] = ucRTC[i] % 10;   
+ 119   2          }
+ 120   1      }
+ 121          
+ 122          /*Task6 Creation DS18B20*/
+ 123          void Task_Ds18b20(void)
+ 124          {
+ 125   1          temprature = Read_Temprature();//获取温度
+ 126   1      
+ 127   1          //数据显示
+ 128   1          Seg_Point[1] = 1;//显示小数点
+ 129   1          Seg_Buf[0] = (uint8_t)(temprature * 10) / 100 % 10;
+ 130   1          Seg_Buf[1] = (uint8_t)(temprature * 10) / 10 % 10;
+ 131   1          Seg_Buf[2] = (uint8_t)(temprature * 10) % 10;
+ 132   1      }
+ 133          
+ 134          /*Task7 Creation Ultrasonic*/
+ 135          void Task_Ul(void)
+ 136          {
+ 137   1          static uint8_t distance;
+ 138   1          distance = Distance_Get();//获取距离
+ 139   1      
+ 140   1          //显示距离
+ 141   1              Seg_Buf[0] = distance / 100 % 10;
+ 142   1              Seg_Buf[1] = distance / 10 % 10;
+ 143   1              Seg_Buf[2] = distance % 10;
+ 144   1      }
+ 145          
+ 146          /*Task8 Creation Serial*/
+ 147          void Task_Serial(void)
+ 148          {
+ 149   1          static uint8_t psc = 0;//分频器 每1s发送一次    
+ 150   1          
+ 151   1          if(++psc == 4)
+ 152   1          {
+ 153   2              psc = 0;
+ 154   2              printf("systime:%d\r\n", (uint16_t)(Mysystick / 1000));
+ 155   2          }
+ 156   1      
+ 157   1          if(Serial_Idle_Cnt < 300)//300ms没接受到数据就会解析一次
+ 158   1          {
+ 159   2              if(RxData[0] == '1')
+ 160   2              {
+ 161   3                  static bit i = 0;
+ 162   3                  index = 0;
+ 163   3                  RxData[0] = 0;
+ 164   3                  memset(ucLed, i, 8);
+ 165   3                  i ^= 1;
+ 166   3              }
+ 167   2          }
+ 168   1      }
+ 169          
+ 170          /*Task9 Creation PCF8951*/
+ 171          void Task_PCF8951(void)
+ 172          {
+ 173   1          Adval1 = AD_Read(0x41);//电位器
+ 174   1          Adval2 = AD_Read(0x43);//光敏
+ 175   1          /*
+ 176   1              tips:   如果只读一个AD值 0x41为光敏 0x43为电位器
+ 177   1                      但是由于本次读取到的数据是上一次转换的结果。
+C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 4   
+
+ 178   1                      所以连续读数据的话需要将两个通道反转一下。
+ 179   1          */
+ 180   1          DA_Write(Adval1);//输出对应电压
+ 181   1      
+ 182   1          Seg_Buf[0]=Adval1 / 100 % 10;
+ 183   1              Seg_Buf[1]=Adval1 / 10 % 10;
+ 184   1              Seg_Buf[2]=Adval1 % 10;
+ 185   1      
+ 186   1          Seg_Buf[5]=Adval2 / 100 % 10;
+ 187   1              Seg_Buf[6]=Adval2 / 10 % 10;
+ 188   1              Seg_Buf[7]=Adval2 % 10;
+ 189   1      
+ 190   1      }
+ 191          
+ 192          /*MAIN*/
+ 193          void main(void)
+ 194          {
+ 195   1          /*Initialize*/
+ 196   1          temprature = Read_Temprature();
+ 197   1          Delay(750);
+ 198   1          memset(Seg_Point,0,8);//初始化数码管小数点缓冲
+ 199   1          memset(Seg_Buf,10,8);//初始化数码管缓冲区
+ 200   1          memset(ucLed,0,8);//初始化LED缓冲区
+ 201   1          RTC_Set(ucRTC);//将需要的时间都写入RTC中
+ 202   1          Sys_Init();//初始化LED和外设
+ 203   1          // Timer0_Init();//初始化TIM0
+ 204   1          // Uart1_Init();//初始化串口1
+ 205   1          Timer2_Init();//初始化心跳时钟源
+ 206   1      
+ 207   1          /*Task Add*/
+ 208   1          Task_Add(&Task_Key, 10);
+ 209   1          // Task_Add(&Task_NE555, 1000);
+ 210   1          // Task_Add(&Task_Periph, 500);
+ 211   1          // Task_Add(&Task_RTC, 500);
+ 212   1          // Task_Add(&Task_Ds18b20, 750);
+ 213   1          // Task_Add(&Task_Ul, 200);
+ 214   1          // Task_Add(&Task_Serial, 250);
+ 215   1          Task_Add(&Task_PCF8951, 200);
+ 216   1      
+ 217   1          /*Loop*/
+ 218   1          while(1)
+ 219   1          {
+ 220   2              Task_Start();
+ 221   2          }
+ 222   1      }
+ 223          
+ 224          /*ISR*/
+ 225          /*这里使用TIM2定时器作为系统心跳源*/
+ 226          void Timer2_Isr(void) interrupt 12
+ 227          {
+ 228   1          Mysystick ++;
+ 229   1          Serial_Idle_Cnt ++;
+ 230   1          Task_Disp();
+ 231   1      }
+ 232          
+ 233          void Uart1_Isr(void) interrupt 4
+ 234          {
+ 235   1              if (RI)                         //检测串口1接收中断
+ 236   1              {
+ 237   2                      RI = 0;                 //清除串口1接收中断请求位
+ 238   2      
+ 239   2              Serial_Idle_Cnt = 0;//没有接收到数据就会一直自增，接收到数据后会保持0，通
+C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 5   
+
+             -过这点可以达到空闲解析的效果
+ 240   2      
+ 241   2                      RxData[index ++] = SBUF;
+ 242   2              }
+ 243   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    906    ----
+   CONSTANT SIZE    =     13    ----
+   XDATA SIZE       =      4    ----
+   PDATA SIZE       =     27    ----
+   DATA SIZE        =     21       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      4    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

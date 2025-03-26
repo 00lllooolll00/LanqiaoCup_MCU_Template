@@ -1,0 +1,90 @@
+C51 COMPILER V9.60.7.0   ULTRASONIC                                                        03/26/2025 22:07:10 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ULTRASONIC
+OBJECT MODULE PLACED IN .\Objects\Ultrasonic.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\Driver\Src\Ultrasonic.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\
+                    -Driver\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Ultrasonic.lst) OBJECT(.\Objects\Ultrasonic.obj)
+
+line level    source
+
+   1          #include "Ultrasonic.h"
+   2          
+   3          /**
+   4           * @brief 12us延时 为超声波发生提供方波
+   5           * 
+   6           */
+   7          void Delay12us(void)    //@12.000MHz
+   8          {
+   9   1              unsigned char data i;
+  10   1      
+  11   1              _nop_();
+  12   1              _nop_();
+  13   1              i = 33;
+  14   1              while (--i);
+  15   1      }
+  16          
+  17          /**
+  18           * @brief 发送8次40Khz的方波
+  19           * 
+  20           */
+  21          void Ul_Wave(void)
+  22          {
+  23   1          uint8_t i;
+  24   1          for(i = 0; i < 8; i ++)
+  25   1          {
+  26   2              Tx = 1;
+  27   2              Delay12us();
+  28   2              Tx = 0;
+  29   2              Delay12us();
+  30   2          }
+  31   1      }
+  32          
+  33          /**
+  34           * @brief 读取距离
+  35           * 
+  36           * 
+  37           * @return 返回距离
+  38           * @note 使用PCA来测距
+  39           */
+  40          uint8_t Distance_Get(void)
+  41          {
+  42   1          uint16_t time;
+  43   1          CH = CL = 0;//PCA的高低计数器设置为0
+  44   1          CMOD = 0x00;//设置PCA模式为定时模式
+  45   1      
+  46   1          Ul_Wave();//发送方波
+  47   1      
+  48   1          CR = 1;//PCA开始计时
+  49   1          while(Rx && !CF);//如果Rx非0说明接收到数据，跳出循环。或者CF置1，表示PCA溢出�
+             -�证明测量已经溢出了，也要跳出循环。
+  50   1          CR = 0;//PCA停止计时
+  51   1      
+  52   1          if(!CF)//如果CF没有置1，说明没有溢出，正常计算数据然后返回
+  53   1          {
+C51 COMPILER V9.60.7.0   ULTRASONIC                                                        03/26/2025 22:07:10 PAGE 2   
+
+  54   2              time = CH << 8 | CL;//先计算得到时间，由时间计算得到下面的距离
+  55   2              return (0.017 * time);
+  56   2          }
+  57   1          else//如果CF置1了，代表溢出，清除CF的标志位并且返回0
+  58   1          {
+  59   2              CF = 0;
+  60   2              return 0;
+  61   2          }
+  62   1      
+  63   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     80    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

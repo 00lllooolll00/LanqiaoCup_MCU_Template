@@ -1,0 +1,1 @@
+"..\Driver\Src\Serial.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Serial.lst) OBJECT(.\Objects\Serial.obj)

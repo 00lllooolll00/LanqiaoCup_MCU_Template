@@ -1,0 +1,55 @@
+C51 COMPILER V9.60.7.0   LED                                                               03/26/2025 22:07:10 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN .\Objects\LED.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\Driver\Src\LED.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\
+                    -Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\LED.lst) OBJECT(.\Objects\LED.obj)
+
+line level    source
+
+   1          #include "LED.h"
+   2          
+   3          //共阳极LED，接通低电平点亮
+   4          /**
+   5           * @brief 对指定LED进行点亮或者熄灭的操作
+   6           * 
+   7           * @param pos LED的位置
+   8           * @param enable 点亮或者熄灭
+   9           */
+  10          void LED_Disp(uint8_t pos,bit enable)
+  11          {
+  12   1          static uint8_t temp = 0x00;//为了保留之前的LED的状态 这里必须是静态变量
+  13   1          static uint8_t LED_Old = 0xff;
+  14   1      
+  15   1          if(enable)
+  16   1          {
+  17   2              temp |= 0x01 << pos;//保留已有LED的状态之下对指定LED进行打开操作
+  18   2          }
+  19   1          else
+  20   1          {
+  21   2              temp &= ~(0x01 << pos);//保留已有LED的状态之下对指定LED进行关闭操作
+  22   2          }
+  23   1      
+  24   1          if(temp != LED_Old)//消除电流声
+  25   1          {
+  26   2              P0 = ~temp;
+  27   2              P2 = P2 & 0x1f | 0x80;
+  28   2              P2 &= 0x1f;
+  29   2              LED_Old = temp;
+  30   2          }
+  31   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     58    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

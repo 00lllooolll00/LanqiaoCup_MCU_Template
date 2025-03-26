@@ -1,0 +1,18 @@
+".\Objects\Delay.obj",
+".\Objects\Key.obj",
+".\Objects\LED.obj",
+".\Objects\Seg.obj",
+".\Objects\SysInit.obj",
+".\Objects\TIM.obj",
+".\Objects\Periph.obj",
+".\Objects\iic.obj",
+".\Objects\onewire.obj",
+".\Objects\ds1302.obj",
+".\Objects\Ultrasonic.obj",
+".\Objects\Serial.obj",
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\Task.obj" 
+TO ".\Objects\NewTemplate2025_3_22" 
+PRINT(".\Listings\NewTemplate2025_3_22.m51") RAMSIZE(256) 
+DISABLEWARNING (16) 

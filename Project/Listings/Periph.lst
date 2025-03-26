@@ -1,0 +1,55 @@
+C51 COMPILER V9.60.7.0   PERIPH                                                            03/26/2025 22:07:10 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PERIPH
+OBJECT MODULE PLACED IN .\Objects\Periph.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\Driver\Src\Periph.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driv
+                    -er\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Periph.lst) OBJECT(.\Objects\Periph.obj)
+
+line level    source
+
+   1          #include "Periph.h"
+   2          
+   3          /**
+   4           * @brief 打开/关闭指定外设
+   5           * 
+   6           * @param x 外设名称 RELAY MOTOR BUZZ           
+   7           * @param enable 打开或关闭
+   8           */
+   9          void Periph_Set(periph_t x,bit enable)//原理和LED差不多 只是这里用了枚举定义了不同的�
+             -�设
+  10          {
+  11   1          static uint8_t temp = 0x00;
+  12   1          static uint8_t Peirph_Old = 0xff;
+  13   1      
+  14   1          if(enable)
+  15   1          {
+  16   2              temp |= x;
+  17   2          }
+  18   1          else
+  19   1          {
+  20   2              temp &= ~x;
+  21   2          }
+  22   1      
+  23   1          if(temp != Peirph_Old)
+  24   1          {
+  25   2              P0 = temp;
+  26   2              P2 = P2 & 0x1f | 0xa0;
+  27   2              P2 &= 0x1f;
+  28   2              Peirph_Old = temp;
+  29   2          }
+  30   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     35    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

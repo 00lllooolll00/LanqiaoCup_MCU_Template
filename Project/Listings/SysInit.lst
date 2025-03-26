@@ -1,0 +1,43 @@
+C51 COMPILER V9.60.7.0   SYSINIT                                                           03/26/2025 22:07:10 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SYSINIT
+OBJECT MODULE PLACED IN .\Objects\SysInit.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\Driver\Src\SysInit.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Dri
+                    -ver\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\SysInit.lst) OBJECT(.\Objects\SysInit.obj)
+
+line level    source
+
+   1          #include "SysInit.h"
+   2          
+   3          /**
+   4           * @brief 关闭LED、蜂鸣器、继电器
+   5           * 
+   6           */
+   7          void Sys_Init(void)
+   8          {
+   9   1          //关闭所有LED
+  10   1          P0 = 0xff;
+  11   1          P2 = P2 & 0x1f | 0x80;//先将P2的高三位清空 再将最高位置一 选择LED通道
+  12   1          P2 &= 0x1f;//P0数据取消锁存之后 重新清空P2高三位
+  13   1          /*Tips：对于之后的P2的位操作不再进行赘述*/
+  14   1      
+  15   1          //关闭所有外设 eg.蜂鸣器、继电器
+  16   1          P0 = 0x00;
+  17   1          P2 = P2 & 0x1f | 0xa0;
+  18   1          P2 &= 0x1f;
+  19   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     29    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

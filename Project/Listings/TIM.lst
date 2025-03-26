@@ -1,0 +1,115 @@
+C51 COMPILER V9.60.7.0   TIM                                                               03/26/2025 22:07:10 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIM
+OBJECT MODULE PLACED IN .\Objects\TIM.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\Driver\Src\TIM.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\
+                    -Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\TIM.lst) OBJECT(.\Objects\TIM.obj)
+
+line level    source
+
+   1          #include "TIM.h"
+   2          
+   3          /**
+   4           * @brief 初始化TIM0，并开启计时器
+   5           * 
+   6           */
+   7          void Timer0_Init(void)          //1毫秒@12.000MHz
+   8          {
+   9   1              #if(NE555)
+  10   1              /*      
+  11   1              Tips:
+  12   1                      定时器模式:16位（不可自动重装）
+  13   1                      定时器时钟:12T
+  14   1                      定时时长:随便选之后给TH0 TL0手动给0
+  15   1                      不要打开中断
+  16   1                      并且要先初始化定时器0在初始化定时器1
+  17   1              */
+  18   1              AUXR &= 0x7F;                   //定时器时钟12T模式
+  19   1              TMOD &= 0xF0;                   //设置定时器模式
+  20   1              TMOD |= 0x05;//一定要手动设置该位置，是为了设置TIM0为16位不可重装的计数模式
+  21   1              TL0 = 0x00;                             //设置定时初始值
+  22   1              TH0 = 0x00 ;                            //设置定时初始值
+  23   1              TF0 = 0;                                //清除TF0标志
+  24   1              TR0 = 1;                                //定时器0开始计时
+  25   1          EA = 1;
+  26   1              #endif
+  27   1      
+  28   1              #if (!NE555)
+                      AUXR &= 0x7F;                   //定时器时钟12T模式
+                      TMOD &= 0xF0;                   //设置定时器模式
+                      TMOD |= 0x01;                   //设置定时器模式
+                      TL0 = 0x18;                             //设置定时初始值
+                      TH0 = 0xFC;                             //设置定时初始值
+                      TF0 = 0;                                //清除TF0标志
+                      TR0 = 1;                                //定时器0开始计时
+                      EA  = 1;//这句话是定时器使能，要自己加上！！！！！！！！！！
+                      #endif
+  38   1      }
+  39          
+  40          /*定时器0中断
+  41          void Timer0_Isr(void) interrupt 1
+  42          {
+  43          }
+  44          */
+  45          
+  46          /**
+  47           * @brief 初始化TIM1，开启计时 
+  48           * @note 如果涉及到NE555测量 需要且只能用TIM0用作计数器，所以这个时候心跳时钟
+             -只能由TIM1来提供
+  49           * 
+  50           */
+  51          void Timer1_Init(void)          //1毫秒@12.000MHz
+  52          {
+  53   1              AUXR &= 0xBF;                   //定时器时钟12T模式
+C51 COMPILER V9.60.7.0   TIM                                                               03/26/2025 22:07:10 PAGE 2   
+
+  54   1              TMOD &= 0x0F;                   //设置定时器模式
+  55   1              TL1 = 0x18;                             //设置定时初始值
+  56   1              TH1 = 0xFC;                             //设置定时初始值
+  57   1              TF1 = 0;                                //清除TF1标志
+  58   1              TR1 = 1;                                //定时器1开始计时
+  59   1              ET1 = 1;                                //使能定时器1中断
+  60   1              EA = 1;//这句话是定时器使能，要自己加上！！！！！！！！！！
+  61   1      }
+  62          
+  63          /*定时器1中断
+  64          void Timer1_Isr(void) interrupt 3
+  65          {
+  66          }
+  67          */
+  68          
+  69          /**
+  70           * @brief  初始化TIM2，开启计时 
+  71           * @note 强烈建议用TIM2作为系统的时基心跳源！！！
+  72           * 
+  73           */
+  74          void Timer2_Init(void)          //1毫秒@12.000MHz
+  75          {
+  76   1              AUXR |= 0x04;                   //定时器时钟1T模式
+  77   1              T2L = 0x20;                             //设置定时初始值
+  78   1              T2H = 0xD1;                             //设置定时初始值
+  79   1              AUXR |= 0x10;                   //定时器2开始计时
+  80   1              IE2 |= 0x04;                    //使能定时器2中断
+  81   1              EA = 1;//这句话是定时器使能，要自己加上！！！！！！！！！！
+  82   1      }
+  83          
+  84          /*定时器2中断
+  85          void Timer2_Isr(void) interrupt 12
+  86          {
+  87          }
+  88          */
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     60    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,74 @@
+C51 COMPILER V9.60.7.0   TASK                                                              03/26/2025 22:42:43 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TASK
+OBJECT MODULE PLACED IN .\Objects\Task.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\User\Src\Task.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\I
+                    -nc) DEBUG OBJECTEXTEND PRINT(.\Listings\Task.lst) OBJECT(.\Objects\Task.obj)
+
+line level    source
+
+   1          /**
+   2           * @file Task.c
+   3           * @author 九千九百九十九
+   4           * @brief 基于时间片轮询的一种裸机任务调度方案
+   5           * @version 0.1
+   6           * @date 2025-03-26
+   7           * 
+   8           * @copyright Copyright (c) 2025
+   9           * 
+  10           */
+  11          #include "Task.h"
+  12          
+  13          uint8_t Task_Num = 0;//任务数量
+  14          task_t xdata Task_Schedule[MAXTASKS];//任务列表 由于过大 存储到xdata区
+  15          
+  16          /**
+  17           * @brief 创建一任务
+  18           * 
+  19           * @param pfunc 该任务的函数指针
+  20           * @param differ_time 任务执行间隔 ms
+  21           */
+  22          void Task_Add(task_func pfunc,uint16_t differ_time)
+  23          {
+  24   1          if(Task_Num <= MAXTASKS)
+  25   1          {
+  26   2              Task_Schedule[Task_Num].LastWakeUp = Mysystick;
+  27   2              Task_Schedule[Task_Num].Interval = differ_time;
+  28   2              Task_Schedule[Task_Num].Function = pfunc;
+  29   2              Task_Num ++;//任务数量自增
+  30   2          }
+  31   1      }
+  32          
+  33          /**
+  34           * @brief 任务开始运行
+  35           * 
+  36           */
+  37          void Task_Start(void)
+  38          {
+  39   1          uint8_t i;
+  40   1          for(i = 0;i < Task_Num;i ++)
+  41   1          {
+  42   2              if(Mysystick - Task_Schedule[i].LastWakeUp >= Task_Schedule[i].Interval)
+  43   2              {
+  44   3                  Task_Schedule[i].LastWakeUp = Mysystick;//更新上次调用任务的时间
+  45   3                  Task_Schedule[i].Function();
+  46   3              }
+  47   2          }
+  48   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    252    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     45    ----
+C51 COMPILER V9.60.7.0   TASK                                                              03/26/2025 22:42:43 PAGE 2   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
