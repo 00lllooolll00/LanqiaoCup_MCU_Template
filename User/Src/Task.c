@@ -39,7 +39,7 @@ void Task_Start(void)
     uint8_t i;
     for(i = 0;i < Task_Num;i ++)
     {
-        if(Mysystick - Task_Schedule[i].LastWakeUp >= Task_Schedule[i].Interval)
+        if(Mysystick - Task_Schedule[i].LastWakeUp >= Task_Schedule[i].Interval)//系统时间减去上次调用的时间大于间隔时间 说明该任务该被调用了
         {
             Task_Schedule[i].LastWakeUp = Mysystick;//更新上次调用任务的时间
             Task_Schedule[i].Function();
