@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/27/2025 20:34:03 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   51   1          Key_Old = Key_Val;
   52   1      
   53   1          /*Test*/
-C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 2   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/27/2025 20:34:03 PAGE 2   
 
   54   1          if(Key_Down == 4)
   55   1          {
@@ -126,7 +126,7 @@ line level    source
  113   1              RTC_Read(ucRTC);
  114   1              Seg_Buf[2] = Seg_Buf[5] = 11;
  115   1          for(i = 0;i < 3; i++)
-C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 3   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/27/2025 20:34:03 PAGE 3   
 
  116   1          {
  117   2              Seg_Buf[i * 3] = ucRTC[i] / 10;
@@ -153,9 +153,9 @@ line level    source
  138   1          distance = Distance_Get();//获取距离
  139   1      
  140   1          //显示距离
- 141   1              Seg_Buf[0] = distance / 100 % 10;
- 142   1              Seg_Buf[1] = distance / 10 % 10;
- 143   1              Seg_Buf[2] = distance % 10;
+ 141   1              Seg_Buf[0] = (uint16_t)distance / 100 % 10;
+ 142   1              Seg_Buf[1] = (uint16_t)distance / 10 % 10;
+ 143   1              Seg_Buf[2] = (uint16_t)distance % 10;
  144   1      }
  145          
  146          /*Task8 Creation Serial*/
@@ -190,7 +190,7 @@ line level    source
  175   1          /*
  176   1              tips:   如果只读一个AD值 0x41为光敏 0x43为电位器
  177   1                      但是由于本次读取到的数据是上一次转换的结果。
-C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 4   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/27/2025 20:34:03 PAGE 4   
 
  178   1                      所以连续读数据的话需要将两个通道反转一下。
  179   1          */
@@ -227,9 +227,9 @@ line level    source
  210   1          // Task_Add(&Task_Periph, 500);
  211   1          // Task_Add(&Task_RTC, 500);
  212   1          // Task_Add(&Task_Ds18b20, 750);
- 213   1          // Task_Add(&Task_Ul, 200);
+ 213   1          Task_Add(&Task_Ul, 200);
  214   1          // Task_Add(&Task_Serial, 250);
- 215   1          Task_Add(&Task_PCF8951, 200);
+ 215   1          //Task_Add(&Task_PCF8951, 200);
  216   1      
  217   1          /*Loop*/
  218   1          while(1)
@@ -254,7 +254,7 @@ line level    source
  237   2                      RI = 0;                 //清除串口1接收中断请求位
  238   2      
  239   2              Serial_Idle_Cnt = 0;//没有接收到数据就会一直自增，接收到数据后会保持0，通
-C51 COMPILER V9.60.7.0   MAIN                                                              03/26/2025 22:42:42 PAGE 5   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/27/2025 20:34:03 PAGE 5   
 
              -过这点可以达到空闲解析的效果
  240   2      
@@ -264,7 +264,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    906    ----
+   CODE SIZE        =    926    ----
    CONSTANT SIZE    =     13    ----
    XDATA SIZE       =      4    ----
    PDATA SIZE       =     27    ----

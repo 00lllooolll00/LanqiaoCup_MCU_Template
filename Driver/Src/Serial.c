@@ -47,7 +47,6 @@ void Serial_SendString(uint8_t *str)
  * @brief printf重定向
  * 
  * @param ch 
- * @param f 
  * @return int 
  */
 char putchar(char c)

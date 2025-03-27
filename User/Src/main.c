@@ -210,9 +210,9 @@ void main(void)
     // Task_Add(&Task_Periph, 500);
     // Task_Add(&Task_RTC, 500);
     // Task_Add(&Task_Ds18b20, 750);
-    // Task_Add(&Task_Ul, 200);
+    Task_Add(&Task_Ul, 200);
     // Task_Add(&Task_Serial, 250);
-    Task_Add(&Task_PCF8951, 200);
+    //Task_Add(&Task_PCF8951, 200);
 
     /*Loop*/
     while(1)

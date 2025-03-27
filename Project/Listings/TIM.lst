@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   TIM                                                               03/26/2025 22:07:10 PAGE 1   
+C51 COMPILER V9.60.7.0   TIM                                                               03/27/2025 20:33:02 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIM
@@ -29,12 +29,12 @@ line level    source
   19   1              TMOD &= 0xF0;                   //设置定时器模式
   20   1              TMOD |= 0x05;//一定要手动设置该位置，是为了设置TIM0为16位不可重装的计数模式
   21   1              TL0 = 0x00;                             //设置定时初始值
-  22   1              TH0 = 0x00 ;                            //设置定时初始值
+  22   1              TH0 = 0x00;                             //设置定时初始值
   23   1              TF0 = 0;                                //清除TF0标志
   24   1              TR0 = 1;                                //定时器0开始计时
   25   1          EA = 1;
   26   1              #endif
-  27   1      
+  27   1              
   28   1              #if (!NE555)
                       AUXR &= 0x7F;                   //定时器时钟12T模式
                       TMOD &= 0xF0;                   //设置定时器模式
@@ -62,7 +62,7 @@ line level    source
   51          void Timer1_Init(void)          //1毫秒@12.000MHz
   52          {
   53   1              AUXR &= 0xBF;                   //定时器时钟12T模式
-C51 COMPILER V9.60.7.0   TIM                                                               03/26/2025 22:07:10 PAGE 2   
+C51 COMPILER V9.60.7.0   TIM                                                               03/27/2025 20:33:02 PAGE 2   
 
   54   1              TMOD &= 0x0F;                   //设置定时器模式
   55   1              TL1 = 0x18;                             //设置定时初始值

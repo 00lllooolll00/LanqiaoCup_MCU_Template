@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ULTRASONIC                                                        03/26/2025 22:07:10 PAGE 1   
+C51 COMPILER V9.60.7.0   ULTRASONIC                                                        03/27/2025 20:34:03 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ULTRASONIC
@@ -62,7 +62,7 @@ line level    source
   51   1      
   52   1          if(!CF)//如果CF没有置1，说明没有溢出，正常计算数据然后返回
   53   1          {
-C51 COMPILER V9.60.7.0   ULTRASONIC                                                        03/26/2025 22:07:10 PAGE 2   
+C51 COMPILER V9.60.7.0   ULTRASONIC                                                        03/27/2025 20:34:03 PAGE 2   
 
   54   2              time = CH << 8 | CL;//先计算得到时间，由时间计算得到下面的距离
   55   2              return (0.017 * time);

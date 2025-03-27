@@ -1,0 +1,1 @@
+"..\Driver\Src\TIM.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\TIM.lst) OBJECT(.\Objects\TIM.obj)
