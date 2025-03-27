@@ -29,10 +29,10 @@ uint32_t xdata Mysystick = 0;//系统心跳
 uint8_t pdata Seg_Buf[8];//数码管显示缓存
 uint8_t pdata Seg_Point[8];//数码管小数点显示缓存
 uint8_t pdata ucLed[8];//LED灯显示缓存
-uint8_t pdata ucRTC[3]={23,59,50};//时间储存 时、分、秒
+uint8_t pdata ucRTC[3] = {23,59,50};//时间储存 时、分、秒
 float temprature;//温度
 uint8_t RxData[5];//串口接收到的的数据
-uint8_t Serial_Idle_Cnt;//串口空闲计时器
+uint16_t Serial_Idle_Cnt;//串口空闲计时器
 uint8_t index;//指示当前接收到数据的索引
 uint8_t Adval1;//AD转换值
 uint8_t Adval2;//AD转换值
@@ -154,7 +154,7 @@ void Task_Serial(void)
         printf("systime:%d\r\n", (uint16_t)(Mysystick / 1000));
     }
 
-    if(Serial_Idle_Cnt < 300)//300ms没接受到数据就会解析一次
+    if(Serial_Idle_Cnt > 300)//300ms没接受到数据就会解析一次
     {
         if(RxData[0] == '1')
         {
@@ -172,21 +172,21 @@ void Task_PCF8951(void)
 {
     Adval1 = AD_Read(0x41);//电位器
     Adval2 = AD_Read(0x43);//光敏
+
     /*
         tips:   如果只读一个AD值 0x41为光敏 0x43为电位器
                 但是由于本次读取到的数据是上一次转换的结果。
                 所以连续读数据的话需要将两个通道反转一下。
     */
-    DA_Write(Adval1);//输出对应电压
+    DA_Write(Adval1 / 51);//输出对应电压
 
-    Seg_Buf[0]=Adval1 / 100 % 10;
-	Seg_Buf[1]=Adval1 / 10 % 10;
-	Seg_Buf[2]=Adval1 % 10;
+   Seg_Buf[0] = Adval1 / 100 % 10;
+	Seg_Buf[1] = Adval1 / 10 % 10;
+	Seg_Buf[2] = Adval1 % 10;
 
-    Seg_Buf[5]=Adval2 / 100 % 10;
-	Seg_Buf[6]=Adval2 / 10 % 10;
-	Seg_Buf[7]=Adval2 % 10;
-
+   Seg_Buf[5] = Adval2 / 100 % 10;
+	Seg_Buf[6] = Adval2 / 10 % 10;
+	Seg_Buf[7] = Adval2 % 10;
 }
 
 /*MAIN*/
@@ -210,9 +210,9 @@ void main(void)
     // Task_Add(&Task_Periph, 500);
     // Task_Add(&Task_RTC, 500);
     // Task_Add(&Task_Ds18b20, 750);
-    Task_Add(&Task_Ul, 200);
+    // Task_Add(&Task_Ul, 200);
     // Task_Add(&Task_Serial, 250);
-    //Task_Add(&Task_PCF8951, 200);
+    Task_Add(&Task_PCF8951, 200);
 
     /*Loop*/
     while(1)

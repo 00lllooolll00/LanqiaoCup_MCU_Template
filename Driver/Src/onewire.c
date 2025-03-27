@@ -76,8 +76,8 @@ float Read_Temprature()
 	init_ds18b20();//初始化单总线
 	Write_DS18B20(0xcc);//ROM指令 skip rom
 	Write_DS18B20(0xbe);//ROM指令 read scratchpad
-	tlow=Read_DS18B20();//低位读取
-	thigh=Read_DS18B20();//高位读取
+	tlow = Read_DS18B20();//低位读取
+	thigh = Read_DS18B20();//高位读取
 	
 	return((thigh << 8) | tlow) / 16.0f;//合并高低位并返回值
 }

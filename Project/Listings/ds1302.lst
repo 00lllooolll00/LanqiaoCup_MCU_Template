@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   DS1302                                                            03/26/2025 22:07:10 PAGE 1   
+C51 COMPILER V9.60.7.0   DS1302                                                            03/27/2025 21:50:06 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DS1302
@@ -62,14 +62,14 @@ line level    source
   52           * @brief 将十进制转换为bcd码
   53           * 
   54           * @param dec 待转换的十进制数
-C51 COMPILER V9.60.7.0   DS1302                                                            03/26/2025 22:07:10 PAGE 2   
+C51 COMPILER V9.60.7.0   DS1302                                                            03/27/2025 21:50:06 PAGE 2   
 
   55           * @return uint8_t 返回一个bcd码的数
   56           */
   57          uint8_t tobcd(uint8_t dec)
   58          {
   59   1              uint8_t bcd;
-  60   1              bcd=dec/10*16+dec%10;
+  60   1              bcd = dec / 10 * 16 + dec % 10;
   61   1              return bcd;
   62   1      }
   63          
@@ -82,7 +82,7 @@ line level    source
   70          uint8_t frombcd(uint8_t bcd)
   71          {
   72   1              uint8_t dec;
-  73   1              dec=bcd/16*10+bcd%16;
+  73   1              dec = bcd / 16 * 10 + bcd % 16;
   74   1              return dec;
   75   1      }
   76          
@@ -94,10 +94,10 @@ line level    source
   82          void RTC_Read(uint8_t* urRTC)
   83          {
   84   1              uint8_t i;
-  85   1              for(i=0;i<3;i++)//循环3位 分别把芯片中的时分秒读入数组ucRTC
+  85   1              for(i = 0;i < 3; i++)//循环3位 分别把芯片中的时分秒读入数组ucRTC
   86   1              {
-  87   2                      urRTC[i]=frombcd(Read_Ds1302_Byte(0x85-2*i));//我们需要的是十进制 但是芯片存储的是bcd�
-             -� 所以需要转译之后再存入数组
+  87   2                      urRTC[i] = frombcd(Read_Ds1302_Byte(0x85 - 2 * i));//我们需要的是十进制 但是芯片存储的�
+             -�bcd码 所以需要转译之后再存入数组
   88   2              }
   89   1      }
   90          
@@ -109,13 +109,13 @@ line level    source
   96          void RTC_Set(uint8_t* urRTC)
   97          {
   98   1              uint8_t i;
-  99   1              Write_Ds1302_Byte(WRITE_PROTECT,0x00);//关闭写入保护
- 100   1              for(i=0;i<3;i++)//循环3位 分别把ucRTC数组中的时分秒写入芯片
+  99   1              Write_Ds1302_Byte(WRITE_PROTECT, 0x00);//关闭写入保护
+ 100   1              for(i = 0; i < 3; i++)//循环3位 分别把ucRTC数组中的时分秒写入芯片
  101   1              {
- 102   2                      Write_Ds1302_Byte(0x84-2*i,tobcd(urRTC[i]));//数组中的为十进制 但是芯片中需要的是bcd �
-             -�以存入芯片之前要先转变成bcd
+ 102   2                      Write_Ds1302_Byte(0x84 - 2 * i, tobcd(urRTC[i]));//数组中的为十进制 但是芯片中需要的是b
+             -cd 所以存入芯片之前要先转变成bcd
  103   2              }
- 104   1              Write_Ds1302_Byte(WRITE_PROTECT,0x80);//打开写入保护
+ 104   1              Write_Ds1302_Byte(WRITE_PROTECT, 0x80);//打开写入保护
  105   1      }
 
 
@@ -126,7 +126,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----       6
    IDATA SIZE       =   ----    ----
-C51 COMPILER V9.60.7.0   DS1302                                                            03/26/2025 22:07:10 PAGE 3   
+C51 COMPILER V9.60.7.0   DS1302                                                            03/27/2025 21:50:06 PAGE 3   
 
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

@@ -9,6 +9,7 @@
         "string.h": "c",
         "iic.h": "c",
         "ultrasonic.h": "c",
-        "serial.h": "c"
+        "serial.h": "c",
+        "ds1302.h": "c"
     }
 }

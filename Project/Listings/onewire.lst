@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ONEWIRE                                                           03/26/2025 22:07:10 PAGE 1   
+C51 COMPILER V9.60.7.0   ONEWIRE                                                           03/27/2025 21:50:06 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ONEWIRE
@@ -62,7 +62,7 @@ line level    source
   52   1              DQ = 1;
   53   1              Delay_OneWire(12);
   54   1              DQ = 0;
-C51 COMPILER V9.60.7.0   ONEWIRE                                                           03/26/2025 22:07:10 PAGE 2   
+C51 COMPILER V9.60.7.0   ONEWIRE                                                           03/27/2025 21:50:06 PAGE 2   
 
   55   1              Delay_OneWire(80);
   56   1              DQ = 1;
@@ -88,8 +88,8 @@ line level    source
   76   1              init_ds18b20();//初始化单总线
   77   1              Write_DS18B20(0xcc);//ROM指令 skip rom
   78   1              Write_DS18B20(0xbe);//ROM指令 read scratchpad
-  79   1              tlow=Read_DS18B20();//低位读取
-  80   1              thigh=Read_DS18B20();//高位读取
+  79   1              tlow = Read_DS18B20();//低位读取
+  80   1              thigh = Read_DS18B20();//高位读取
   81   1              
   82   1              return((thigh << 8) | tlow) / 16.0f;//合并高低位并返回值
   83   1      }
