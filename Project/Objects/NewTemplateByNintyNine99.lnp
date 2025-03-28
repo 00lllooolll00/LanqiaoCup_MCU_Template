@@ -2,7 +2,6 @@
 ".\Objects\Key.obj",
 ".\Objects\LED.obj",
 ".\Objects\Seg.obj",
-".\Objects\SysInit.obj",
 ".\Objects\TIM.obj",
 ".\Objects\Periph.obj",
 ".\Objects\iic.obj",

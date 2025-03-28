@@ -10,6 +10,7 @@ typedef enum
     BUZZ = 0x40
 }periph_t;
 
+void Periph_Init(void);
 void Periph_Set(periph_t x,bit enable);
 
 

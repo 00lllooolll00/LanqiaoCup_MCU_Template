@@ -66,7 +66,7 @@ bit init_ds18b20(void)
  * 
  * @return float 温度值
  */
-float Read_Temprature()
+float Read_temperature()
 {
 	uint8_t thigh,tlow;//定义高低位
 	init_ds18b20();//初始化单总线

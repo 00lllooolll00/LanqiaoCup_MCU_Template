@@ -11,13 +11,12 @@
 /*HEADER*/
 #include "main.h"
 #include "Task.h"
-#include "SysInit.h"
+#include "Periph.h"
 #include "TIM.h"
 #include "LED.h"
 #include "Seg.h"
 #include "Key.h"
 #include "Delay.h"
-#include "Periph.h"
 #include "iic.h"
 #include "onewire.h"
 #include "ds1302.h"
@@ -30,12 +29,50 @@ uint8_t pdata Seg_Buf[8];//数码管显示缓存
 uint8_t pdata Seg_Point[8];//数码管小数点显示缓存
 uint8_t pdata ucLed[8];//LED灯显示缓存
 uint8_t pdata ucRTC[3] = {23,59,50};//时间储存 时、分、秒
-float temprature;//温度
+float temperature;//温度
 uint8_t RxData[5];//串口接收到的的数据
 uint16_t Serial_Idle_Cnt;//串口空闲计时器
 uint8_t index;//指示当前接收到数据的索引
 uint8_t Adval1;//AD转换值
 uint8_t Adval2;//AD转换值
+
+/*Function Prototype*/
+/**
+ * @brief 滤波器 使连续变化的数据更加平滑
+ * 
+ * @param dat 输入连续变化的待测数据
+ * @param index 滤波系数 0-1 越大滤波力度越大
+ * @return uint16_t 返回滤波后的值
+ * 
+ * @note 如果需要对float类型的数据进行滤波 请重写本函数 如下所示
+ */
+uint16_t Filter_int(uint16_t dat, float index)
+{
+    static uint16_t LastData_int = 0;
+    uint16_t temp;
+    if(!LastData_int)LastData_int = dat;
+    temp = LastData_int * index + dat * (1 - index);
+    LastData_int = temp;
+    return temp;
+}
+
+/**
+ * @brief 对浮点类型、连续变化的数据滤波
+ * 
+ * @param dat 输入连续变化的待测数据
+ * @param index 滤波系数 0-1 越大滤波力度越大
+ * @return float 返回滤波后的值
+ */
+float Filter_float(float dat, float index)
+{
+    static float LastData_float = 0;
+    float temp;
+    if(!LastData_float)LastData_float = dat;
+    temp = LastData_float * index + dat * (1 - index);
+    LastData_float = temp;
+    return temp;
+}
+
 
 /*Task1 Creation Key*/
 void Task_Key(void)
@@ -122,25 +159,29 @@ void Task_RTC(void)
 /*Task6 Creation DS18B20*/
 void Task_Ds18b20(void)
 {
-    temprature = Read_Temprature();//获取温度
+    float temperature_show;//展示的温度值
+    temperature = Read_temperature();//获取温度
+    temperature_show = Filter_float(temperature, 0.3);//滤波
 
     //数据显示
     Seg_Point[1] = 1;//显示小数点
-    Seg_Buf[0] = (uint8_t)(temprature * 10) / 100 % 10;
-    Seg_Buf[1] = (uint8_t)(temprature * 10) / 10 % 10;
-    Seg_Buf[2] = (uint8_t)(temprature * 10) % 10;
+    Seg_Buf[0] = (uint8_t)(temperature_show * 10) / 100 % 10;
+    Seg_Buf[1] = (uint8_t)(temperature_show * 10) / 10 % 10;
+    Seg_Buf[2] = (uint8_t)(temperature_show * 10) % 10;
 }
 
 /*Task7 Creation Ultrasonic*/
 void Task_Ul(void)
 {
     static uint8_t distance;
+    static uint8_t distance_Show;
     distance = Distance_Get();//获取距离
+    distance_Show = (uint8_t)Filter_int(distance, 0.2);//滤波
 
     //显示距离
-	Seg_Buf[0] = distance / 100 % 10;
-	Seg_Buf[1] = distance / 10 % 10;
-	Seg_Buf[2] = distance % 10;
+	Seg_Buf[0] = distance_Show / 100 % 10;
+	Seg_Buf[1] = distance_Show / 10 % 10;
+	Seg_Buf[2] = distance_Show % 10;
 }
 
 /*Task8 Creation Serial*/
@@ -148,14 +189,16 @@ void Task_Serial(void)
 {
     static uint8_t psc = 0;//分频器 每1s发送一次    
     
+    /*模拟串口发送数据 这里是1s打印一个数据*/
     if(++psc == 4)
     {
         psc = 0;
         printf("systime:%d\r\n", (uint16_t)(Mysystick / 1000));
     }
 
-    if(Serial_Idle_Cnt > 300)//300ms没接受到数据就会解析一次
+    if(Serial_Idle_Cnt > 300)//300ms没接受到数据就会解析一次 这里可以自行调整
     {
+        /*串口解析操作*/
         if(RxData[0] == '1')
         {
             static bit i = 0;
@@ -170,9 +213,14 @@ void Task_Serial(void)
 /*Task9 Creation PCF8951*/
 void Task_PCF8951(void)
 {
+    uint16_t Adval1_Show;//滤波后的展示值
+    uint16_t Adval2_Show;//滤波后的展示值
+
     Adval1 = AD_Read(0x41);//电位器
     Adval2 = AD_Read(0x43);//光敏
 
+    Adval1_Show = Filter_int(Adval1, 0.2);//滤波
+    Adval2_Show = Filter_int(Adval2, 0.2);
     /*
         tips:   如果只读一个AD值 0x41为光敏 0x43为电位器
                 但是由于本次读取到的数据是上一次转换的结果。
@@ -180,39 +228,40 @@ void Task_PCF8951(void)
     */
     DA_Write(Adval1 / 51);//输出对应电压
 
-   Seg_Buf[0] = Adval1 / 100 % 10;
-	Seg_Buf[1] = Adval1 / 10 % 10;
-	Seg_Buf[2] = Adval1 % 10;
+    Seg_Buf[0] = Adval1_Show / 100 % 10;
+	Seg_Buf[1] = Adval1_Show / 10 % 10;
+	Seg_Buf[2] = Adval1_Show % 10;
 
-   Seg_Buf[5] = Adval2 / 100 % 10;
-	Seg_Buf[6] = Adval2 / 10 % 10;
-	Seg_Buf[7] = Adval2 % 10;
+    Seg_Buf[5] = Adval2_Show / 100 % 10;
+	Seg_Buf[6] = Adval2_Show / 10 % 10;
+	Seg_Buf[7] = Adval2_Show % 10;
 }
 
 /*MAIN*/
 void main(void)
 {
     /*Initialize*/
-    temprature = Read_Temprature();
-    Delay(750);
+    Periph_Init();//初始化LED和外设 尽量将该模块放到第一个
+    while(Read_temperature() > 80);//消除ds18b20首次转换为85的数据
     memset(Seg_Point,0,8);//初始化数码管小数点缓冲
     memset(Seg_Buf,10,8);//初始化数码管缓冲区
     memset(ucLed,0,8);//初始化LED缓冲区
+
     RTC_Set(ucRTC);//将需要的时间都写入RTC中
-    Sys_Init();//初始化LED和外设
     // Timer0_Init();//初始化TIM0
     // Uart1_Init();//初始化串口1
     Timer2_Init();//初始化心跳时钟源
 
     /*Task Add*/
+    /*以下为各个模块的实例历程  取消注释即可观察对应模块的现象*/
     Task_Add(&Task_Key, 10);
     // Task_Add(&Task_NE555, 1000);
     // Task_Add(&Task_Periph, 500);
     // Task_Add(&Task_RTC, 500);
-    // Task_Add(&Task_Ds18b20, 750);
+    Task_Add(&Task_Ds18b20, 750);
     // Task_Add(&Task_Ul, 200);
     // Task_Add(&Task_Serial, 250);
-    Task_Add(&Task_PCF8951, 200);
+    // Task_Add(&Task_PCF8951, 200);
 
     /*Loop*/
     while(1)
@@ -230,6 +279,7 @@ void Timer2_Isr(void) interrupt 12
     Task_Disp();
 }
 
+/*串口中断*/
 void Uart1_Isr(void) interrupt 4
 {
 	if (RI)				//检测串口1接收中断

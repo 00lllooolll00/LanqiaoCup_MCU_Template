@@ -1,0 +1,1 @@
+"..\Driver\Src\Periph.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Periph.lst) OBJECT(.\Objects\Periph.obj)

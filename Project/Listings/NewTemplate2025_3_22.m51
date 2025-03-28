@@ -111,7 +111,7 @@ LINK MAP OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
             CODE    1108H     003AH     UNIT         ?PR?_LED_DISP?LED
             CODE    1142H     003AH     UNIT         ?PR?_RTC_SET?DS1302
             CODE    117CH     0038H     UNIT         ?PR?DISTANCE_GET?ULTRASONIC
-            CODE    11B4H     0034H     UNIT         ?PR?READ_TEMPRATURE?ONEWIRE
+            CODE    11B4H     0034H     UNIT         ?PR?READ_temperature?ONEWIRE
             CODE    11E8H     0034H     UNIT         ?PR?_READ_DS1302_BYTE?DS1302
             CODE    121CH     0032H     UNIT         ?PR?_E2PROM_WRITE?IIC
             CODE    124EH     0031H     UNIT         ?PR?TASK_DISP?MAIN
@@ -167,7 +167,7 @@ SEGMENT                                  BIT_GROUP          DATA_GROUP
   +--> ?C_INITSEG
 
 ?PR?MAIN?MAIN                         -----    -----      -----    -----
-  +--> ?PR?READ_TEMPRATURE?ONEWIRE
+  +--> ?PR?READ_temperature?ONEWIRE
   +--> ?PR?_DELAY?DELAY
   +--> ?PR?_RTC_SET?DS1302
   +--> ?PR?SYS_INIT?SYSINIT
@@ -177,7 +177,7 @@ SEGMENT                                  BIT_GROUP          DATA_GROUP
   +--> ?PR?TASK_PCF8951?MAIN
   +--> ?PR?TASK_START?TASK
 
-?PR?READ_TEMPRATURE?ONEWIRE           -----    -----      -----    -----
+?PR?READ_temperature?ONEWIRE           -----    -----      -----    -----
   +--> ?PR?INIT_DS18B20?ONEWIRE
 BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/26/2025  22:36:32  PAGE 4
 
@@ -854,7 +854,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
   D:00E8H         PUBLIC        P6
   D:00F8H         PUBLIC        P7
   D:00A8H         PUBLIC        IE
-  C:11B4H         PUBLIC        Read_Temprature
+  C:11B4H         PUBLIC        Read_temperature
   C:14A1H         PUBLIC        _Delay_OneWire
   C:0003H         PUBLIC        _Write_DS18B20
   B:0090H.4       PUBLIC        DQ
@@ -939,7 +939,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
   C:137CH         LINE#         61
   C:137EH         LINE#         62
   -------         ENDPROC       INIT_DS18B20
-  -------         PROC          READ_TEMPRATURE
+  -------         PROC          READ_temperature
   -------         DO            
   D:0007H         SYMBOL        thigh
   D:0001H         SYMBOL        tlow
@@ -955,7 +955,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
   C:11CEH         LINE#         79
   C:11D3H         LINE#         80
   C:11D6H         LINE#         82
-  -------         ENDPROC       READ_TEMPRATURE
+  -------         ENDPROC       READ_temperature
   -------         ENDMOD        ONEWIRE
 
   -------         MODULE        DS1302
@@ -1332,7 +1332,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
   B:00A8H.3       PUBLIC        ET1
   D:0018H         PUBLIC        Serial_Idle_Cnt
   D:008CH         PUBLIC        TH0
-  D:0019H         PUBLIC        temprature
+  D:0019H         PUBLIC        temperature
   D:008AH         PUBLIC        TL0
   X:0048H         PUBLIC        Mysystick
   B:0088H.4       PUBLIC        TR0

@@ -5,6 +5,6 @@
 
 sbit DQ = P1 ^ 4;
 
-float Read_Temprature();
+float Read_temperature();
 
 #endif

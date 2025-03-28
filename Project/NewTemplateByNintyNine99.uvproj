@@ -397,11 +397,6 @@
               <FilePath>..\Driver\Src\Seg.c</FilePath>
             </File>
             <File>
-              <FileName>SysInit.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Driver\Src\SysInit.c</FilePath>
-            </File>
-            <File>
               <FileName>TIM.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Driver\Src\TIM.c</FilePath>
