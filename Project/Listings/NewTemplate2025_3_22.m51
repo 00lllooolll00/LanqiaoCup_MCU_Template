@@ -99,7 +99,7 @@ LINK MAP OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
             CODE    0C9FH     008CH     UNIT         ?C_C51STARTUP
             CODE    0D2BH     007FH     UNIT         ?PR?TASK_NE555?MAIN
             CODE    0DAAH     006DH     UNIT         ?PR?MAIN?MAIN
-            CODE    0E17H     0062H     UNIT         ?PR?TASK_PCF8951?MAIN
+            CODE    0E17H     0062H     UNIT         ?PR?TASK_PCF8591?MAIN
             CODE    0E79H     0061H     UNIT         ?PR?_TASK_ADD?TASK
             CODE    0EDAH     0060H     UNIT         ?PR?TASK_DS18B20?MAIN
             CODE    0F3AH     005CH     UNIT         ?PR?TIMER2_ISR?MAIN
@@ -174,7 +174,7 @@ SEGMENT                                  BIT_GROUP          DATA_GROUP
   +--> ?PR?TIMER2_INIT?TIM
   +--> ?PR?TASK_KEY?MAIN
   +--> ?PR?_TASK_ADD?TASK
-  +--> ?PR?TASK_PCF8951?MAIN
+  +--> ?PR?TASK_PCF8591?MAIN
   +--> ?PR?TASK_START?TASK
 
 ?PR?READ_temperature?ONEWIRE           -----    -----      -----    -----
@@ -208,7 +208,7 @@ SEGMENT                                  BIT_GROUP          DATA_GROUP
 
 ?PR?_TASK_ADD?TASK                    -----    -----      003EH    0005H
 
-?PR?TASK_PCF8951?MAIN                 -----    -----      -----    -----
+?PR?TASK_PCF8591?MAIN                 -----    -----      -----    -----
   +--> ?PR?_AD_READ?IIC
   +--> ?PR?_DA_WRITE?IIC
 
@@ -1317,7 +1317,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
   C:1040H         PUBLIC        Task_Key
   D:00D8H         PUBLIC        CCON
   C:0DAAH         PUBLIC        main
-  C:0E17H         PUBLIC        Task_PCF8951
+  C:0E17H         PUBLIC        Task_PCF8591
   C:0D2BH         PUBLIC        Task_NE555
 BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/26/2025  22:36:32  PAGE 23
 
@@ -1478,7 +1478,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
   C:0FEEH         LINE#         157
   C:0FEEH         LINE#         158
   -------         ENDPROC       TASK_SERIAL
-  -------         PROC          TASK_PCF8951
+  -------         PROC          TASK_PCF8591
   C:0E17H         LINE#         161
   C:0E17H         LINE#         162
   C:0E17H         LINE#         163
@@ -1491,7 +1491,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
   C:0E60H         LINE#         172
   C:0E6EH         LINE#         173
   C:0E78H         LINE#         175
-  -------         ENDPROC       TASK_PCF8951
+  -------         ENDPROC       TASK_PCF8591
   -------         PROC          MAIN
   C:0DAAH         LINE#         178
   C:0DAAH         LINE#         179
