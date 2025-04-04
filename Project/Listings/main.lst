@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 11:52:58 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 13:52:34 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   51   1          static uint16_t LastData_int = 0;
   52   1          uint16_t temp;
   53   1          if (!LastData_int) LastData_int = dat;
-C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 11:52:58 PAGE 2   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 13:52:34 PAGE 2   
 
   54   1          temp = LastData_int * index + dat * (1 - index);
   55   1          LastData_int = temp;
@@ -126,7 +126,7 @@ line level    source
  113   1          //显示数据
  114   1          //为避免第一次测量时没数据，先初始化为0，先显示第一次再开始测量
  115   1          Seg_Buf[0] = Freq / 10000 % 10;
-C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 11:52:58 PAGE 3   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 13:52:34 PAGE 3   
 
  116   1          Seg_Buf[1] = Freq / 1000 % 10;
  117   1          Seg_Buf[2] = Freq / 100 % 10;
@@ -190,7 +190,7 @@ line level    source
  175   1          distance = Distance_Get(); //获取距离
  176   1          distance_Show = (uint8_t)Filter_int(distance, 0.2); //滤波
  177   1      
-C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 11:52:58 PAGE 4   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 13:52:34 PAGE 4   
 
  178   1          //显示距离
  179   1          Seg_Buf[0] = distance_Show / 100 % 10;
@@ -240,7 +240,7 @@ line level    source
  223   1                      但是由于本次读取到的数据是上一次转换的结果。
  224   1                      所以连续读数据的话需要将两个通道反转一下。
  225   1          */
- 226   1          DA_Write(Adval1 / 51); //输出对应电压
+ 226   1          DA_Write(Adval1); //输出对应电压
  227   1      
  228   1          Seg_Buf[0] = Adval1_Show / 100 % 10;
  229   1          Seg_Buf[1] = Adval1_Show / 10 % 10;
@@ -254,7 +254,7 @@ line level    source
  237          /*MAIN*/
  238          void main(void)
  239          {
-C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 11:52:58 PAGE 5   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 13:52:34 PAGE 5   
 
  240   1          /*Initialize*/
  241   1          Periph_Init(); //初始化LED和外设 尽量将该模块放到第一个
@@ -270,12 +270,12 @@ line level    source
  251   1      
  252   1          /*Task Add*/
  253   1          /*以下为各个模块的实例历程  取消注释即可观察对应模块的现象*/
- 254   1          Task_Add(&Task_Key, 10);
+ 254   1          // Task_Add(&Task_Key, 10);
  255   1          // Task_Add(&Task_NE555, 1000);
  256   1          // Task_Add(&Task_Periph, 500);
  257   1          // Task_Add(&Task_RTC, 500);
  258   1          // Task_Add(&Task_Ds18b20, 750);
- 259   1          Task_Add(&Task_Ul, 200);
+ 259   1          // Task_Add(&Task_Ul, 200);
  260   1          // Task_Add(&Task_Serial, 250);
  261   1          // Task_Add(&Task_PCF8591, 200);
  262   1      
@@ -311,14 +311,14 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1242    ----
+   CODE SIZE        =   1211    ----
    CONSTANT SIZE    =     13    ----
    XDATA SIZE       =      4    ----
    PDATA SIZE       =     27    ----
    DATA SIZE        =     29      27
    IDATA SIZE       =   ----    ----
    BIT SIZE         =      4    ----
-C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 11:52:58 PAGE 6   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/29/2025 13:52:34 PAGE 6   
 
 END OF MODULE INFORMATION.
 

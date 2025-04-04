@@ -251,12 +251,12 @@ void main(void)
 
     /*Task Add*/
     /*以下为各个模块的实例历程  取消注释即可观察对应模块的现象*/
-    Task_Add(&Task_Key, 10);
+    // Task_Add(&Task_Key, 10);
     // Task_Add(&Task_NE555, 1000);
     // Task_Add(&Task_Periph, 500);
     // Task_Add(&Task_RTC, 500);
     // Task_Add(&Task_Ds18b20, 750);
-    Task_Add(&Task_Ul, 200);
+    // Task_Add(&Task_Ul, 200);
     // Task_Add(&Task_Serial, 250);
     // Task_Add(&Task_PCF8591, 200);
 

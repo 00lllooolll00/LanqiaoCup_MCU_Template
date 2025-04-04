@@ -130,7 +130,7 @@ uint8_t AD_Read(uint8_t addr)
 
     //第一阶段 写阶段（其实是告诉从机我要从哪个地址的寄存器读取数据）
     I2CStart(); //开启通讯
-    I2CSendByte(ADDR_PCF8591 | 0x00); //对PCF8591写数据
+    I2CSendByte(ADDR_PCF8591 & 0xfe); //对PCF8591写数据
     I2CWaitAck(); //等待从机回应
     I2CSendByte(addr); //告诉从机要读取数据的地址
     I2CWaitAck(); //等待从机回应
@@ -154,7 +154,7 @@ uint8_t AD_Read(uint8_t addr)
 void DA_Write(uint8_t dat)
 {
     I2CStart(); //开启
-    I2CSendByte(ADDR_PCF8591 | 0x00); //选中地址 0x90 写模式
+    I2CSendByte(ADDR_PCF8591 & 0xfe); //选中地址 0x90 写模式
     I2CWaitAck(); //等待应答
     I2CSendByte(0x43); //发送0x4x：让模拟信号输出使能
     I2CWaitAck(); //等待应答
@@ -173,7 +173,7 @@ void DA_Write(uint8_t dat)
 void E2prom_Write(uint8_t *e2prom_string, uint8_t addr, uint8_t num)
 {
     I2CStart(); //开启i2c通讯
-    I2CSendByte(ADDR_AT24C02 | 0x00); //选中at24c02芯片 写模式 0-写模式 1-读模式
+    I2CSendByte(ADDR_AT24C02 & 0xfe); //选中at24c02芯片 写模式 0-写模式 1-读模式
     I2CWaitAck(); //等待从机应答
 
     I2CSendByte(addr); //向at24c02写入数据  告知写入数据存放在at24c02芯片的地址
@@ -199,14 +199,14 @@ void E2prom_Write(uint8_t *e2prom_string, uint8_t addr, uint8_t num)
 void E2prom_Read(uint8_t *e2prom_string, uint8_t addr, uint8_t num)
 {
     I2CStart(); //开启i2c通讯
-    I2CSendByte(ADDR_AT24C02 | 0x00); //选中at24c02芯片 写模式 a：1010为at24c02地址 0-写模式 1-读模式
+    I2CSendByte(ADDR_AT24C02 & 0xfe); //选中at24c02芯片 写模式 a：1010为at24c02地址 0-写模式 1-读模式
     I2CWaitAck(); //等待从机应答
 
     I2CSendByte(addr); //向at24c02写入数据  告知写入数据存放在at24c02芯片的地址
     I2CWaitAck(); //等待从机应答
 
     I2CStart(); //开启i2c通讯
-    I2CSendByte(ADDR_AT24C02 | 0x01); //选中at24c02芯片 写模式 a：1010为at24c02地址 0-写模式 1-读模式
+    I2CSendByte(ADDR_AT24C02 | 0x01); //选中at24c02芯片 读模式 a：1010为at24c02地址 0-写模式 1-读模式
     I2CWaitAck(); //等待从机应答
 
     while (num--) //当前读取页数
