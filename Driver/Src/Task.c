@@ -10,8 +10,10 @@
  */
 #include "Task.h"
 
-uint8_t Task_Num = 0;//任务数量
-task_t xdata Task_Schedule[MAXTASKS];//任务列表 由于过大 存储到xdata区
+#define MAXTASKS 5 //最大任务数目
+
+uint8_t Task_Num = 0; //任务数量
+task_t xdata Task_Schedule[MAXTASKS]; //任务列表 由于过大 存储到xdata区
 
 /**
  * @brief 创建一任务
@@ -19,14 +21,14 @@ task_t xdata Task_Schedule[MAXTASKS];//任务列表 由于过大 存储到xdata�
  * @param pfunc 该任务的函数指针
  * @param differ_time 任务执行间隔 ms
  */
-void Task_Add(task_func pfunc,uint16_t differ_time)
+void Task_Add(task_func pfunc, uint16_t differ_time)
 {
-    if(Task_Num <= MAXTASKS)
+    if (Task_Num <= MAXTASKS)
     {
         Task_Schedule[Task_Num].LastWakeUp = Mysystick;
         Task_Schedule[Task_Num].Interval = differ_time;
         Task_Schedule[Task_Num].Function = pfunc;
-        Task_Num ++;//任务数量自增
+        Task_Num++; //任务数量自增
     }
 }
 
@@ -37,11 +39,12 @@ void Task_Add(task_func pfunc,uint16_t differ_time)
 void Task_Start(void)
 {
     uint8_t i;
-    for(i = 0;i < Task_Num;i ++)
+    for (i = 0; i < Task_Num; i++)
     {
-        if(Mysystick - Task_Schedule[i].LastWakeUp >= Task_Schedule[i].Interval)//系统时间减去上次调用的时间大于间隔时间 说明该任务该被调用了
+        if (Mysystick - Task_Schedule[i].LastWakeUp >=
+            Task_Schedule[i].Interval) //系统时间减去上次调用的时间大于间隔时间 说明该任务该被调用了
         {
-            Task_Schedule[i].LastWakeUp = Mysystick;//更新上次调用任务的时间
+            Task_Schedule[i].LastWakeUp = Mysystick; //更新上次调用任务的时间
             Task_Schedule[i].Function();
         }
     }

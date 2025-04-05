@@ -1,0 +1,228 @@
+C51 COMPILER V9.60.7.0   TASK_APP                                                          04/06/2025 01:31:24 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TASK_APP
+OBJECT MODULE PLACED IN .\Objects\Task_App.obj
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\User\Src\Task_App.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driv
+                    -er\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Task_App.lst) OBJECT(.\Objects\Task_App.obj)
+
+line level    source
+
+   1          #include "Task_App.h"
+   2          
+   3          uint8_t pdata ucRTC[3] = {23, 59, 50}; //时间储存 时、分、秒
+   4          float temperature; //温度
+   5          uint8_t RxData[5]; //串口接收到的的数据
+   6          uint16_t Serial_Idle_Cnt; //串口空闲计时器
+   7          uint8_t index; //指示当前接收到数据的索引
+   8          uint8_t Adval1; //AD转换值
+   9          uint8_t Adval2; //AD转换值
+  10          
+  11          /*Function Prototype*/
+  12          /**
+  13           * @brief 滤波器 使连续变化的数据更加平滑
+  14           * 
+  15           * @param dat 输入连续变化的待测数据
+  16           * @param index 滤波系数 0-1 越大滤波力度越大
+  17           * @return uint16_t 返回滤波后的值
+  18           * 
+  19           * @note 如果需要对float类型的数据进行滤波 请重写本函数 如下所示
+  20           */
+  21          uint16_t Filter_int(uint16_t dat, float index)
+  22          {
+  23   1          static uint16_t LastData_int = 0;
+  24   1          uint16_t temp;
+  25   1          if (!LastData_int) LastData_int = dat;
+  26   1          temp = LastData_int * index + dat * (1 - index);
+  27   1          LastData_int = temp;
+  28   1          return temp;
+  29   1      }
+  30          
+  31          /**
+  32           * @brief 对浮点类型、连续变化的数据滤波
+  33           * 
+  34           * @param dat 输入连续变化的待测数据
+  35           * @param index 滤波系数 0-1 越大滤波力度越大
+  36           * @return float 返回滤波后的值
+  37           */
+  38          float Filter_float(float dat, float index)
+  39          {
+  40   1          static float LastData_float = 0;
+  41   1          float temp;
+  42   1          if (!LastData_float) LastData_float = dat;
+  43   1          temp = LastData_float * index + dat * (1 - index);
+  44   1          LastData_float = temp;
+  45   1          return temp;
+  46   1      }
+  47          
+  48          /*Task1 Creation Key*/
+  49          void Task_Key(void)
+  50          {
+  51   1          static uint8_t Key_Val;
+  52   1          static uint8_t Key_Down;
+  53   1          static uint8_t Key_Up;
+  54   1          static uint8_t Key_Old = 0; //该值初始给0 避免警告
+C51 COMPILER V9.60.7.0   TASK_APP                                                          04/06/2025 01:31:24 PAGE 2   
+
+  55   1      
+  56   1          Key_Val = Key_Read();
+  57   1          Key_Down = Key_Val & (Key_Val ^ Key_Old);
+  58   1          Key_Up = ~Key_Val & (Key_Val ^ Key_Old);
+  59   1          Key_Old = Key_Val;
+  60   1      
+  61   1          /*Test*/
+  62   1          if (Key_Down == 4)
+  63   1          {
+  64   2              static bit Test_Flag = 0;
+  65   2              Test_Flag ^= 1;
+  66   2              memset(Led_Buf, Test_Flag, 8);
+  67   2              memset(Seg_Point, Test_Flag, 8);
+  68   2          }
+  69   1      }
+  70          
+  71          /*Task2 Creation NE555*/
+  72          void Task_NE555(void)
+  73          {
+  74   1          static uint16_t Freq = 0; //NE555频率
+  75   1      
+  76   1          //显示数据
+  77   1          //为避免第一次测量时没数据，先初始化为0，先显示第一次再开始测量
+  78   1          Seg_Buf[0] = Freq / 10000 % 10;
+  79   1          Seg_Buf[1] = Freq / 1000 % 10;
+  80   1          Seg_Buf[2] = Freq / 100 % 10;
+  81   1          Seg_Buf[3] = Freq / 10 % 10;
+  82   1          Seg_Buf[4] = Freq % 10;
+  83   1      
+  84   1          TR0 = 0; //关闭TIM0计数
+  85   1          ET1 = 0; //关闭TIM1中断允许
+  86   1          Freq = TH0 << 8 | TL0; //获取频率
+  87   1          TH0 = TL0 = 0; //手动清空计数值
+  88   1          ET1 = 1; //打开TIM1中断允许
+  89   1          TR0 = 1; //开启TIM0计数
+  90   1      }
+  91          
+  92          /*Task3 Creation Buzz Motor Relay*/
+  93          void Task_Periph(void)
+  94          {
+  95   1          static bit Flag_Buzz = 0;
+  96   1          static bit Flag_Relay = 1;
+  97   1      
+  98   1          Periph_Set(BUZZ, Flag_Buzz);
+  99   1          Periph_Set(RELAY, Flag_Relay);
+ 100   1      
+ 101   1          //500ms翻转一次继电器和蜂鸣器的电平
+ 102   1          Flag_Buzz ^= 1;
+ 103   1          Flag_Relay ^= 1;
+ 104   1      }
+ 105          
+ 106          /*Task4 Creation DS1302*/
+ 107          void Task_RTC(void)
+ 108          {
+ 109   1          uint8_t i;
+ 110   1          RTC_Read(ucRTC);
+ 111   1          Seg_Buf[2] = Seg_Buf[5] = 11;
+ 112   1          for (i = 0; i < 3; i++)
+ 113   1          {
+ 114   2              Seg_Buf[i * 3] = ucRTC[i] / 10;
+ 115   2              Seg_Buf[i * 3 + 1] = ucRTC[i] % 10;
+ 116   2          }
+C51 COMPILER V9.60.7.0   TASK_APP                                                          04/06/2025 01:31:24 PAGE 3   
+
+ 117   1      }
+ 118          
+ 119          /*Task5 Creation DS18B20*/
+ 120          void Task_Ds18b20(void)
+ 121          {
+ 122   1          float temperature_show; //展示的温度值
+ 123   1          temperature = Read_temperature(); //获取温度
+ 124   1          temperature_show = Filter_float(temperature, 0.3); //滤波
+ 125   1      
+ 126   1          //数据显示
+ 127   1          Seg_Point[1] = 1; //显示小数点
+ 128   1          Seg_Buf[0] = (uint8_t)(temperature_show * 10) / 100 % 10;
+ 129   1          Seg_Buf[1] = (uint8_t)(temperature_show * 10) / 10 % 10;
+ 130   1          Seg_Buf[2] = (uint8_t)(temperature_show * 10) % 10;
+ 131   1      }
+ 132          
+ 133          /*Task6 Creation Ultrasonic*/
+ 134          void Task_Ul(void)
+ 135          {
+ 136   1          static uint8_t distance;
+ 137   1          static uint8_t distance_Show;
+ 138   1          distance = Distance_Get(); //获取距离
+ 139   1          distance_Show = (uint8_t)Filter_int(distance, 0.2); //滤波
+ 140   1      
+ 141   1          //显示距离
+ 142   1          Seg_Buf[0] = distance_Show / 100 % 10;
+ 143   1          Seg_Buf[1] = distance_Show / 10 % 10;
+ 144   1          Seg_Buf[2] = distance_Show % 10;
+ 145   1      }
+ 146          
+ 147          /*Task7 Creation Serial*/
+ 148          void Task_Serial(void)
+ 149          {
+ 150   1          static uint8_t psc = 0; //分频器 每1s发送一次
+ 151   1      
+ 152   1          /*模拟串口发送数据 这里是1s打印一个数据*/
+ 153   1          if (++psc == 4)
+ 154   1          {
+ 155   2              psc = 0;
+ 156   2              printf("systime:%d\r\n", (uint16_t)(Mysystick / 1000));
+ 157   2          }
+ 158   1      
+ 159   1          if (Serial_Idle_Cnt > 300) //300ms没接受到数据就会解析一次 这里可以自行调整
+ 160   1          {
+ 161   2              /*串口解析操作*/
+ 162   2              if (RxData[0] == '1')
+ 163   2              {
+ 164   3                  static bit i = 0;
+ 165   3                  index = 0;
+ 166   3                  RxData[0] = 0;
+ 167   3                  memset(Led_Buf, i, 8);
+ 168   3                  i ^= 1;
+ 169   3              }
+ 170   2          }
+ 171   1      }
+ 172          
+ 173          /*Task8 Creation PCF8591*/
+ 174          void Task_PCF8591(void)
+ 175          {
+ 176   1          uint16_t Adval1_Show; //滤波后的展示值
+ 177   1          uint16_t Adval2_Show; //滤波后的展示值
+ 178   1      
+C51 COMPILER V9.60.7.0   TASK_APP                                                          04/06/2025 01:31:24 PAGE 4   
+
+ 179   1          Adval1 = AD_Read(0x41); //电位器
+ 180   1          Adval2 = AD_Read(0x43); //光敏
+ 181   1      
+ 182   1          Adval1_Show = Filter_int(Adval1, 0.2); //滤波
+ 183   1          Adval2_Show = Filter_int(Adval2, 0.2);
+ 184   1          /*
+ 185   1              tips:   如果只读一个AD值 0x41为光敏 0x43为电位器
+ 186   1                      但是由于本次读取到的数据是上一次转换的结果。
+ 187   1                      所以连续读数据的话需要将两个通道反转一下。
+ 188   1          */
+ 189   1          DA_Write(Adval1); //输出对应电压
+ 190   1      
+ 191   1          Seg_Buf[0] = Adval1_Show / 100 % 10;
+ 192   1          Seg_Buf[1] = Adval1_Show / 10 % 10;
+ 193   1          Seg_Buf[2] = Adval1_Show % 10;
+ 194   1      
+ 195   1          Seg_Buf[5] = Adval2_Show / 100 % 10;
+ 196   1          Seg_Buf[6] = Adval2_Show / 10 % 10;
+ 197   1          Seg_Buf[7] = Adval2_Show % 10;
+ 198   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    946    ----
+   CONSTANT SIZE    =     13    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =      3    ----
+   DATA SIZE        =     29      26
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      4    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

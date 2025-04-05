@@ -3,8 +3,6 @@
 
 #include "main.h"
 
-#define MAXTASKS 5 //最大任务数目
-
 typedef void (*task_func)(void); //定义任务执行函数
 
 typedef struct

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   PERIPH                                                            03/28/2025 09:06:58 PAGE 1   
+C51 COMPILER V9.60.7.0   PERIPH                                                            04/06/2025 01:16:33 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PERIPH
@@ -18,14 +18,14 @@ line level    source
    8          {
    9   1          //关闭所有LED
   10   1          P0 = 0xff;
-  11   1          P2 = P2 & 0x1f | 0x80;//先将P2的高三位清空 再将最高位置一 选择LED通道
-  12   1          P2 &= 0x1f;//P0数据取消锁存之后 重新清空P2高三位
-  13   1          /*Tips：对于之后的P2的位操作不再进行赘述*/
-  14   1      
-  15   1          //关闭所有外设 eg.蜂鸣器、继电器
-  16   1          P0 = 0x00;
-  17   1          P2 = P2 & 0x1f | 0xa0;
-  18   1          P2 &= 0x1f;
+  11   1          OPEN(4);
+  12   1          // P2 = P2 & 0x1f | 0x80; //先将P2的高三位清空 再将最高位置一 选择LED通道
+  13   1          // P2 &= 0x1f; //P0数据取消锁存之后 重新清空P2高三位
+  14   1          /*Tips：对于之后的P2的位操作不再进行赘述*/
+  15   1      
+  16   1          //关闭所有外设 eg.蜂鸣器、继电器
+  17   1          P0 = 0x00;
+  18   1          OPEN(5);
   19   1      }
   20          
   21          /**
@@ -34,13 +34,13 @@ line level    source
   24           * @param x 外设名称 RELAY MOTOR BUZZ           
   25           * @param enable 打开或关闭
   26           */
-  27          void Periph_Set(periph_t x,bit enable)//原理和LED差不多 只是这里用了枚举定义了不同的�
-             -�设
+  27          void Periph_Set(periph_t x, bit enable) //原理和LED差不多 只是这里用了枚举定义了不同的
+             -外设
   28          {
   29   1          static uint8_t temp = 0x00;
   30   1          static uint8_t Peirph_Old = 0xff;
   31   1      
-  32   1          if(enable)
+  32   1          if (enable)
   33   1          {
   34   2              temp |= x;
   35   2          }
@@ -49,26 +49,68 @@ line level    source
   38   2              temp &= ~x;
   39   2          }
   40   1      
-  41   1          if(temp != Peirph_Old)
+  41   1          if (temp != Peirph_Old)
   42   1          {
   43   2              P0 = temp;
-  44   2              P2 = P2 & 0x1f | 0xa0;
-  45   2              P2 &= 0x1f;
-  46   2              Peirph_Old = temp;
-  47   2          }
-  48   1      }
+  44   2              OPEN(5);
+  45   2              Peirph_Old = temp;
+  46   2          }
+  47   1      }
+  48          
+  49          //共阳极LED，接通低电平点亮
+  50          /**
+  51           * @brief 对指定LED进行点亮或者熄灭的操作
+  52           * 
+  53           * @param pos LED的位置
+C51 COMPILER V9.60.7.0   PERIPH                                                            04/06/2025 01:16:33 PAGE 2   
+
+  54           * @param enable 点亮或者熄灭
+  55           */
+  56          void Led_Disp(uint8_t pos, bit enable)
+  57          {
+  58   1          static uint8_t temp = 0x00; //为了保留之前的LED的状态 这里必须是静态变量
+  59   1          static uint8_t LED_Old = 0xff;
+  60   1      
+  61   1          if (enable)
+  62   1          {
+  63   2              temp |= 0x01 << pos; //保留已有LED的状态之下对指定LED进行打开操作
+  64   2          }
+  65   1          else
+  66   1          {
+  67   2              temp &= ~(0x01 << pos); //保留已有LED的状态之下对指定LED进行关闭操作
+  68   2          }
+  69   1      
+  70   1          if (temp != LED_Old) //消除电流声
+  71   1          {
+  72   2              P0 = ~temp;
+  73   2              OPEN(4);
+  74   2              LED_Old = temp;
+  75   2          }
+  76   1      }
+  77          
+  78          // /**
+  79          //  * @brief 基于4T测评的优化版本
+  80          //  *
+  81          //  * @param Led_Buf LED的缓存
+  82          //  */
+  83          // void Led_Disp(uint8_t *Led_Buf)
+  84          // {
+  85          //     uint8_t temp = 0;
+  86          //     static uint8_t temp_old = 0xff;
+  87          
+  88          //     temp = Led_Buf[0] << 0 | Led_Buf[1] << 1 | Led_Buf[2] << 2 | Led_Buf[3] << 3 | Led_Buf[4] << 4 | Le
+             -d_Buf[5] << 5 |
+  89          //            Led_Buf[6] << 6 | Led_Buf[7] << 7;
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     64    ----
+   CODE SIZE        =    122    ----
    CONSTANT SIZE    =   ----    ----
-C51 COMPILER V9.60.7.0   PERIPH                                                            03/28/2025 09:06:58 PAGE 2   
-
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =      2    ----
+   DATA SIZE        =      4    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----       1
+   BIT SIZE         =   ----       2
 END OF MODULE INFORMATION.
 
 

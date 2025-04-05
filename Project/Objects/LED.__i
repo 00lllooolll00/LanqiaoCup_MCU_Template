@@ -1,1 +1,0 @@
-"..\Driver\Src\LED.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\LED.lst) OBJECT(.\Objects\LED.obj)

@@ -13,13 +13,18 @@
 typedef unsigned char uint8_t;
 typedef unsigned int uint16_t; //根据不同处理器的架构不同，在51中int型一般占用2个字节，在32中int型占用4个字节
 typedef unsigned long uint32_t;
-// typedef unsigned long long uint64_t;//在51里一般用不到
 
 typedef char int8_t;
 typedef int int16_t;
 typedef long int32_t;
-// typedef long long int64_t;//在51里一般用不到
 
-extern uint32_t xdata Mysystick;
+#define OPEN(X)                                                                                                        \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        P2 = P2 & 0x1f | (X << 5);                                                                                     \
+        P2 &= 0x1f;                                                                                                    \
+    } while (0);
+
+extern uint32_t pdata Mysystick;
 
 #endif

@@ -10,6 +10,7 @@
         "iic.h": "c",
         "ultrasonic.h": "c",
         "serial.h": "c",
-        "ds1302.h": "c"
+        "ds1302.h": "c",
+        "stdio.h": "c"
     }
 }

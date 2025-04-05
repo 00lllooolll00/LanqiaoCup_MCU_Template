@@ -1,10 +1,10 @@
-C51 COMPILER V9.60.7.0   TASK                                                              03/27/2025 20:33:03 PAGE 1   
+C51 COMPILER V9.60.7.0   TASK                                                              04/06/2025 01:16:34 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TASK
 OBJECT MODULE PLACED IN .\Objects\Task.obj
-COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\User\Src\Task.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver\I
-                    -nc) DEBUG OBJECTEXTEND PRINT(.\Listings\Task.lst) OBJECT(.\Objects\Task.obj)
+COMPILER INVOKED BY: D:\Keli5\C51\BIN\C51.EXE ..\Driver\Src\Task.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User\Inc;..\Driver
+                    -\Inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Task.lst) OBJECT(.\Objects\Task.obj)
 
 line level    source
 
@@ -20,50 +20,53 @@ line level    source
   10           */
   11          #include "Task.h"
   12          
-  13          uint8_t Task_Num = 0;//任务数量
-  14          task_t xdata Task_Schedule[MAXTASKS];//任务列表 由于过大 存储到xdata区
-  15          
-  16          /**
-  17           * @brief 创建一任务
-  18           * 
-  19           * @param pfunc 该任务的函数指针
-  20           * @param differ_time 任务执行间隔 ms
-  21           */
-  22          void Task_Add(task_func pfunc,uint16_t differ_time)
-  23          {
-  24   1          if(Task_Num <= MAXTASKS)
-  25   1          {
-  26   2              Task_Schedule[Task_Num].LastWakeUp = Mysystick;
-  27   2              Task_Schedule[Task_Num].Interval = differ_time;
-  28   2              Task_Schedule[Task_Num].Function = pfunc;
-  29   2              Task_Num ++;//任务数量自增
-  30   2          }
-  31   1      }
-  32          
-  33          /**
-  34           * @brief 任务开始运行
-  35           * 
-  36           */
-  37          void Task_Start(void)
-  38          {
-  39   1          uint8_t i;
-  40   1          for(i = 0;i < Task_Num;i ++)
-  41   1          {
-  42   2              if(Mysystick - Task_Schedule[i].LastWakeUp >= Task_Schedule[i].Interval)//系统时间减去上次
-             -调用的时间大于间隔时间 说明该任务该被调用了
-  43   2              {
-  44   3                  Task_Schedule[i].LastWakeUp = Mysystick;//更新上次调用任务的时间
-  45   3                  Task_Schedule[i].Function();
-  46   3              }
-  47   2          }
-  48   1      }
+  13          #define MAXTASKS 5 //最大任务数目
+  14          
+  15          uint8_t Task_Num = 0; //任务数量
+  16          task_t xdata Task_Schedule[MAXTASKS]; //任务列表 由于过大 存储到xdata区
+  17          
+  18          /**
+  19           * @brief 创建一任务
+  20           * 
+  21           * @param pfunc 该任务的函数指针
+  22           * @param differ_time 任务执行间隔 ms
+  23           */
+  24          void Task_Add(task_func pfunc, uint16_t differ_time)
+  25          {
+  26   1          if (Task_Num <= MAXTASKS)
+  27   1          {
+  28   2              Task_Schedule[Task_Num].LastWakeUp = Mysystick;
+  29   2              Task_Schedule[Task_Num].Interval = differ_time;
+  30   2              Task_Schedule[Task_Num].Function = pfunc;
+  31   2              Task_Num++; //任务数量自增
+  32   2          }
+  33   1      }
+  34          
+  35          /**
+  36           * @brief 任务开始运行
+  37           * 
+  38           */
+  39          void Task_Start(void)
+  40          {
+  41   1          uint8_t i;
+  42   1          for (i = 0; i < Task_Num; i++)
+  43   1          {
+  44   2              if (Mysystick - Task_Schedule[i].LastWakeUp >=
+  45   2                  Task_Schedule[i].Interval) //系统时间减去上次调用的时间大于间隔时间 说明�
+             -��任务该被调用了
+  46   2              {
+  47   3                  Task_Schedule[i].LastWakeUp = Mysystick; //更新上次调用任务的时间
+  48   3                  Task_Schedule[i].Function();
+  49   3              }
+  50   2          }
+  51   1      }
 
+
+C51 COMPILER V9.60.7.0   TASK                                                              04/06/2025 01:16:34 PAGE 2   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    252    ----
+   CODE SIZE        =    253    ----
    CONSTANT SIZE    =   ----    ----
-C51 COMPILER V9.60.7.0   TASK                                                              03/27/2025 20:33:03 PAGE 2   
-
    XDATA SIZE       =     45    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =      1       6

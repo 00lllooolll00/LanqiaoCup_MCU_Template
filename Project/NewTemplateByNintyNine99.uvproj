@@ -377,19 +377,9 @@
           <GroupName>Driver</GroupName>
           <Files>
             <File>
-              <FileName>Delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Driver\Src\Delay.c</FilePath>
-            </File>
-            <File>
               <FileName>Key.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Driver\Src\Key.c</FilePath>
-            </File>
-            <File>
-              <FileName>LED.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Driver\Src\LED.c</FilePath>
             </File>
             <File>
               <FileName>Seg.c</FileName>
@@ -431,6 +421,11 @@
               <FileType>1</FileType>
               <FilePath>..\Driver\Src\Serial.c</FilePath>
             </File>
+            <File>
+              <FileName>Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Driver\Src\Task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -447,9 +442,9 @@
               <FilePath>..\User\Src\main.c</FilePath>
             </File>
             <File>
-              <FileName>Task.c</FileName>
+              <FileName>Task_App.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\Src\Task.c</FilePath>
+              <FilePath>..\User\Src\Task_App.c</FilePath>
             </File>
           </Files>
         </Group>

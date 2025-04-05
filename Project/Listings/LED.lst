@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   LED                                                               03/27/2025 20:33:02 PAGE 1   
+C51 COMPILER V9.60.7.0   LED                                                               04/06/2025 01:11:53 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LED
@@ -17,21 +17,21 @@ line level    source
    7           * @param pos LED的位置
    8           * @param enable 点亮或者熄灭
    9           */
-  10          void LED_Disp(uint8_t pos,bit enable)
+  10          void Led_Disp(uint8_t pos, bit enable)
   11          {
-  12   1          static uint8_t temp = 0x00;//为了保留之前的LED的状态 这里必须是静态变量
+  12   1          static uint8_t temp = 0x00; //为了保留之前的LED的状态 这里必须是静态变量
   13   1          static uint8_t LED_Old = 0xff;
   14   1      
-  15   1          if(enable)
+  15   1          if (enable)
   16   1          {
-  17   2              temp |= 0x01 << pos;//保留已有LED的状态之下对指定LED进行打开操作
+  17   2              temp |= 0x01 << pos; //保留已有LED的状态之下对指定LED进行打开操作
   18   2          }
   19   1          else
   20   1          {
-  21   2              temp &= ~(0x01 << pos);//保留已有LED的状态之下对指定LED进行关闭操作
+  21   2              temp &= ~(0x01 << pos); //保留已有LED的状态之下对指定LED进行关闭操作
   22   2          }
   23   1      
-  24   1          if(temp != LED_Old)//消除电流声
+  24   1          if (temp != LED_Old) //消除电流声
   25   1          {
   26   2              P0 = ~temp;
   27   2              P2 = P2 & 0x1f | 0x80;
@@ -39,6 +39,31 @@ line level    source
   29   2              LED_Old = temp;
   30   2          }
   31   1      }
+  32          
+  33          // /**
+  34          //  * @brief 基于4T测评的优化版本
+  35          //  *
+  36          //  * @param Led_Buf LED的缓存
+  37          //  */
+  38          // void Led_Disp(uint8_t *Led_Buf)
+  39          // {
+  40          //     uint8_t temp = 0;
+  41          //     static uint8_t temp_old = 0xff;
+  42          
+  43          //     temp = Led_Buf[0] << 0 | Led_Buf[1] << 1 | Led_Buf[2] << 2 | Led_Buf[3] << 3 | Led_Buf[4] << 4 | Le
+             -d_Buf[5] << 5 |
+  44          //            Led_Buf[6] << 6 | Led_Buf[7] << 7;
+  45          
+  46          //     if (temp != temp_old)
+  47          //     {
+  48          //         P0 = ~temp;
+  49          //         P2 = P2 & 0x1f | 0x80;
+  50          //         P2 &= 0x1f;
+  51          //         temp_old = temp;
+  52          //     }
+  53          // }
+C51 COMPILER V9.60.7.0   LED                                                               04/06/2025 01:11:53 PAGE 2   
+
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
