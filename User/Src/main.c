@@ -27,7 +27,7 @@
 uint32_t xdata Mysystick = 0; //系统心跳
 uint8_t pdata Seg_Buf[8]; //数码管显示缓存
 uint8_t pdata Seg_Point[8]; //数码管小数点显示缓存
-uint8_t pdata ucLed[8]; //LED灯显示缓存
+uint8_t pdata Led_Buf[8]; //LED灯显示缓存
 uint8_t pdata ucRTC[3] = {23, 59, 50}; //时间储存 时、分、秒
 float temperature; //温度
 uint8_t RxData[5]; //串口接收到的的数据
@@ -91,7 +91,7 @@ void Task_Key(void)
     {
         static bit Test_Flag = 0;
         Test_Flag ^= 1;
-        memset(ucLed, Test_Flag, 8);
+        memset(Led_Buf, Test_Flag, 8);
         memset(Seg_Point, Test_Flag, 8);
     }
 }
@@ -102,7 +102,8 @@ void Task_Disp(void)
     uint8_t Scan = Mysystick % 8; //显示扫描变量 只在0——7周期变
 
     Seg_Disp(Scan, Seg_Buf[Scan], Seg_Point[Scan]); //数码管显示
-    LED_Disp(Scan, ucLed[Scan]); //LED显示
+    LED_Disp(Scan, Led_Buf[Scan]); //LED显示
+    LED_Disp(Led_Buf); //LED显示 4T优化版本
 }
 
 /*Task3 Creation NE555*/
@@ -201,7 +202,7 @@ void Task_Serial(void)
             static bit i = 0;
             index = 0;
             RxData[0] = 0;
-            memset(ucLed, i, 8);
+            memset(Led_Buf, i, 8);
             i ^= 1;
         }
     }
@@ -242,7 +243,7 @@ void main(void)
     while (Read_temperature() > 80); //消除ds18b20首次转换为85的数据
     memset(Seg_Point, 0, 8); //初始化数码管小数点缓冲
     memset(Seg_Buf, 10, 8); //初始化数码管缓冲区
-    memset(ucLed, 0, 8); //初始化LED缓冲区
+    memset(Led_Buf, 0, 8); //初始化LED缓冲区
 
     RTC_Set(ucRTC); //将需要的时间都写入RTC中
     // Timer0_Init();//初始化TIM0

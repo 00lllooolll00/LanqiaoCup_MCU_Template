@@ -52,7 +52,7 @@ uint8_t Distance_Get(void)
     if(!CF)//如果CF没有置1，说明没有溢出，正常计算数据然后返回
     {
         time = CH << 8 | CL;//先计算得到时间，由时间计算得到下面的距离
-        return (0.017 * time);
+        return (0.017 * time) + 3;
     }
     else//如果CF置1了，代表溢出，清除CF的标志位并且返回0
     {

@@ -1341,7 +1341,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplate2025_3_22 (DELAY)
   C:137FH         PUBLIC        Uart1_Isr
   C:10C7H         PUBLIC        Task_RTC
   C:144BH         PUBLIC        Task_Periph
-  X:0013H         PUBLIC        ucLed
+  X:0013H         PUBLIC        Led_Buf
   D:00D0H         PUBLIC        PSW
   -------         PROC          TASK_KEY
   -------         DO            

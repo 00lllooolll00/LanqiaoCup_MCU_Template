@@ -1294,7 +1294,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\NewTemplateByNintyNine99 (DELAY)
   C:1269H         PUBLIC        Task_RTC
   C:15FFH         PUBLIC        Task_Periph
   C:0FAFH         PUBLIC        _Filter_float
-  X:0013H         PUBLIC        ucLed
+  X:0013H         PUBLIC        Led_Buf
   D:00D0H         PUBLIC        PSW
   C:0EBFH         SYMBOL        L?0031
   -------         PROC          L?0030
