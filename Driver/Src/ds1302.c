@@ -108,6 +108,7 @@ void RTC_Set(uint8_t *urRTC)
 {
     uint8_t i;
     Write_Ds1302_Byte(0x8e, 0x00); //关闭写入保护
+    Write_Ds1302_Byte(0x80, 0x80); //关闭时钟启动
     for (i = 0; i < 3; i++) //循环3位 分别把ucRTC数组中的时分秒写入芯片
     {
         //数组中的为十进制 但是芯片中需要的是bcd 所以存入芯片之前要先转变成bcd

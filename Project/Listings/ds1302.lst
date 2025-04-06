@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   DS1302                                                            04/06/2025 01:31:06 PAGE 1   
+C51 COMPILER V9.60.7.0   DS1302                                                            04/06/2025 13:24:22 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DS1302
@@ -62,7 +62,7 @@ line level    source
   52   1          SCK = 1;
   53   1          _nop_();
   54   1          SDA = 0;
-C51 COMPILER V9.60.7.0   DS1302                                                            04/06/2025 01:31:06 PAGE 2   
+C51 COMPILER V9.60.7.0   DS1302                                                            04/06/2025 13:24:22 PAGE 2   
 
   55   1          _nop_();
   56   1          SDA = 1;
@@ -121,20 +121,21 @@ line level    source
  108          {
  109   1          uint8_t i;
  110   1          Write_Ds1302_Byte(0x8e, 0x00); //关闭写入保护
- 111   1          for (i = 0; i < 3; i++) //循环3位 分别把ucRTC数组中的时分秒写入芯片
- 112   1          {
- 113   2              //数组中的为十进制 但是芯片中需要的是bcd 所以存入芯片之前要先转变成b
+ 111   1          Write_Ds1302_Byte(0x80, 0x80); //关闭时钟启动
+ 112   1          for (i = 0; i < 3; i++) //循环3位 分别把ucRTC数组中的时分秒写入芯片
+ 113   1          {
+ 114   2              //数组中的为十进制 但是芯片中需要的是bcd 所以存入芯片之前要先转变成b
              -cd
- 114   2              Write_Ds1302_Byte(0x84 - 2 * i, tobcd(urRTC[i]));
-C51 COMPILER V9.60.7.0   DS1302                                                            04/06/2025 01:31:06 PAGE 3   
+C51 COMPILER V9.60.7.0   DS1302                                                            04/06/2025 13:24:22 PAGE 3   
 
- 115   2          }
- 116   1          Write_Ds1302_Byte(0x8e, 0x80); //打开写入保护
- 117   1      }
+ 115   2              Write_Ds1302_Byte(0x84 - 2 * i, tobcd(urRTC[i]));
+ 116   2          }
+ 117   1          Write_Ds1302_Byte(0x8e, 0x80); //打开写入保护
+ 118   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    226    ----
+   CODE SIZE        =    233    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
