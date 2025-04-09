@@ -23,6 +23,7 @@ extern float temperature; //温度
 extern uint8_t RxData[5]; //串口接收到的的数据
 extern uint16_t Serial_Idle_Cnt; //串口空闲计时器
 extern uint8_t index; //指示当前接收到数据的索引
+extern bit Serial_RxFlag; //串口接收了数据标志位
 extern uint8_t Adval1; //AD转换值
 extern uint8_t Adval2; //AD转换值
 

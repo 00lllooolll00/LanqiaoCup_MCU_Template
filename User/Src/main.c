@@ -78,7 +78,7 @@ void Uart1_Isr(void) interrupt 4
         RI = 0; //清除串口1接收中断请求位
 
         Serial_Idle_Cnt = 0; //没有接收到数据就会一直自增，接收到数据后会保持0，通过这点可以达到空闲解析的效果
-
+        bit Serial_RxFlag = 1; //串口接收数据的标志位
         RxData[index++] = SBUF;
     }
 }

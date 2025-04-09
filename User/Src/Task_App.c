@@ -7,6 +7,7 @@ uint16_t Serial_Idle_Cnt; //串口空闲计时器
 uint8_t index; //指示当前接收到数据的索引
 uint8_t Adval1; //AD转换值
 uint8_t Adval2; //AD转换值
+bit Serial_RxFlag = 0; //串口接收了数据标志位
 
 /*Function Prototype*/
 /**
@@ -156,7 +157,7 @@ void Task_Serial(void)
         printf("systime:%d\r\n", (uint16_t)(Mysystick / 1000));
     }
 
-    if (Serial_Idle_Cnt > 300) //300ms没接受到数据就会解析一次 这里可以自行调整
+    if (Serial_Idle_Cnt > 300 && Serial_RxFlag) //接收了数据，但是300ms没再次接受到数据就会解析一次 这里可以自行调整
     {
         /*串口解析操作*/
         if (RxData[0] == '1')
@@ -164,6 +165,7 @@ void Task_Serial(void)
             static bit i = 0;
             index = 0;
             RxData[0] = 0;
+            Serial_RxFlag = 0;
             memset(Led_Buf, i, 8);
             i ^= 1;
         }
